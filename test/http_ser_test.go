@@ -25,12 +25,11 @@ func (ih *indexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestHttpSer(t *testing.T) {
-
 	server := http.Server{
 		Addr: ":8001",
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if strings.Index(r.URL.String(), "test") > 0 {
-				fmt.Fprintf(w, "测试请求")
+				fmt.Fprintf(w, "这是net/http创建的server第一种方式")
 				return
 			}
 			fmt.Fprintf(w, task.FunTester)
@@ -65,11 +64,11 @@ func TestHttpServer23(t *testing.T) {
 	s.ListenAndServe()
 }
 func TestHttpSer2(t *testing.T) {
-
-	http.Handle("/test/", &indexHandler{content: "hello world!"})
+	http.Handle("/test", &indexHandler{content: "这是net/http第二种创建服务语法"})
 	http.Handle("/", &indexHandler{content: task.FunTester})
 	http.ListenAndServe(":8001", nil)
 }
+
 func TestHttpSer3(t *testing.T) {
 	app := echo.New()
 	app.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -79,37 +78,50 @@ func TestHttpSer3(t *testing.T) {
 	}))
 	app.Group("/test")
 	{
-		projectGroup := app.Group("/property")
-		projectGroup.POST("/create", PropertyAddHandler)
+		projectGroup := app.Group("/test")
+		projectGroup.GET("/", PropertyAddHandler)
 	}
-	gracehttp.Serve()
+	app.Server.Addr = ":8001"
+	gracehttp.Serve(app.Server)
 
 }
 
 func PropertyAddHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"msg": "FunTester",
+		"msg":  "这是net/http第三种创建服务的语法",
+		"code": 888,
 	})
 }
 func TestFastSer(t *testing.T) {
-	address := "127.0.0.1:3001"
+	address := ":8001"
+	handler := func(ctx *fasthttp.RequestCtx) {
+		path := string(ctx.Path())
+		switch path {
+		case "/test":
+			ctx.SetBody([]byte("这是fasthttp创建服务的第一种语法"))
+		default:
+			ctx.SetBody([]byte(task.FunTester))
+		}
+	}
 	s := &fasthttp.Server{
-		Handler: func(ctx *fasthttp.RequestCtx) {
-			ctx.Response.SetBody([]byte(task.FunTester))
-		}, // 注意这里
-		Name: "FunTester server", // 服务器名称
+		Handler: handler,
+		Name:    "FunTester server",
 	}
 
-	router := fasthttprouter.New()
-	router.GET("/test", func(ctx *fasthttp.RequestCtx) {
-		ctx.Response.SetBody([]byte("get"))
-	})
-	//fasthttp.ListenAndServe(":12345",func(ctx *fasthttp.RequestCtx){
-	//	ctx.Response.SetBody([]byte(FunTester))
-	//})
-	fasthttp.ListenAndServe(address, router.Handler)
 	if err := s.ListenAndServe(address); err != nil {
 		log.Fatal("error in ListenAndServe", err.Error())
 	}
 
+}
+func TestFastSer2(t *testing.T) {
+	address := ":8001"
+
+	router := fasthttprouter.New()
+	router.GET("/test", func(ctx *fasthttp.RequestCtx) {
+		ctx.Response.SetBody([]byte("这是fasthttp创建server的第二种语法"))
+	})
+	router.GET("/", func(ctx *fasthttp.RequestCtx) {
+		ctx.Response.SetBody([]byte(task.FunTester))
+	})
+	fasthttp.ListenAndServe(address, router.Handler)
 }

@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -25,4 +27,5 @@ func main() {
 	log.Println(unix)
 	log.Println(now.UnixNano())
 	log.Println(now.UnixMicro())
+	fmt.Println(strings.Index("123", "2"))
 }
