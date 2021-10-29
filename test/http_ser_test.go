@@ -41,16 +41,17 @@ func TestHttpSer(t *testing.T) {
 
 }
 
-func TestHttpServer23(t *testing.T) {
+func TestHttpServer4(t *testing.T) {
 	router := gin.New()
 
 	api := router.Group("/okreplay/api")
 	{
 		api.POST("/submit", gin.HandlerFunc(func(context *gin.Context) {
 			context.ShouldBindJSON(map[string]interface{}{
-				"code": 3,
-				"msg":  "FunTester",
+				"code": 0,
+				"msg":  "这是创建HTTPServer第四种方式",
 			})
+			context.Status(200)
 		}))
 
 	}
