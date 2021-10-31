@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
+	"funtester/task"
 	"io"
 	"log"
 	"os"
-	"strings"
-	"sync"
 	"time"
 )
 
@@ -23,42 +22,6 @@ func init() {
 func main() {
 	args := os.Args
 	fmt.Println(args)
-	now := time.Now()
-	milli := now.UnixMilli()
-	unix := now.Unix()
-	log.Println(milli)
-	log.Println(unix)
-	log.Println(now.UnixNano())
-	log.Println(now.UnixMicro())
-	fmt.Println(strings.Index("123", "1112"))
-	getwd, _ := os.Getwd()
-	fmt.Println(getwd)
-	var once sync.Once
-	onceBody := func() {
-		fmt.Println("Only once")
-	}
-	var wait sync.WaitGroup
-	wait.Add(10)
-	done := make(chan bool)
-	for i := 0; i < 10; i++ {
-		go func() {
-			once.Do(onceBody)
-			done <- true
-			wait.Done()
-		}()
-	}
-	for i := 0; i < 10; i++ {
-		<-done
-	}
-	wait.Wait()
-	//reader := bufio.NewReader(os.Stdin)
-	//input, _ := reader.ReadString('\n')
-	//for {
-	//	input, _ := reader.ReadString('\n')
-	//	input = strings.TrimSpace(input)
-	//	if input == "quit" {
-	//		return
-	//	}
-	//}
+	fmt.Println(task.RandomFloat())
 
 }
