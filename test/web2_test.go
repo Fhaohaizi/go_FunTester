@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"testing"
+	"time"
 )
 
 func TestMn2(t *testing.T) {
@@ -36,28 +37,31 @@ func TestMn2(t *testing.T) {
 	<-ints
 }
 
+var cons = make(map[int]*websocket.Conn)
+var i int = 1
+
 func Echo(ws *websocket.Conn) {
-
 	var err error
-
 	for {
-
 		var reply string
-		//websocket接受信息
 		if err = websocket.Message.Receive(ws, &reply); err != nil {
 			fmt.Println("receive failed:", err)
 			break
 		}
-
-		fmt.Println("reveived from client: " + reply)
-		msg := "received:" + reply
-		fmt.Println("send to client:" + msg)
-		//这里是发送消息
-		if err = websocket.Message.Send(ws, msg); err != nil {
-			fmt.Println("send failed:", err)
-			break
+		for k, con := range cons {
+			sendMessage("你发错了", k, con)
 		}
+		log.Printf("收到消息:%s", reply)
+		msg := string(time.Now().String())
+		websocket.Message.Send(ws, msg)
+	}
 
+}
+
+func sendMessage(msg string, k int, s *websocket.Conn) {
+	if err := websocket.Message.Send(s, msg); err != nil {
+		fmt.Println("Can't send")
+		delete(cons, k)
 	}
 
 }
@@ -65,6 +69,10 @@ func Echo(ws *websocket.Conn) {
 func TestSer(t *testing.T) {
 	//接受websocket的路由地址
 	http.Handle("/websocket", websocket.Handler(Echo))
+	http.HandleFunc("/t", func(w http.ResponseWriter, req *http.Request) {
+		s := websocket.Server{Handler: websocket.Handler(Echo)}
+		s.ServeHTTP(w, req)
+	})
 	if err := http.ListenAndServe(":1234", nil); err != nil {
 
 		log.Fatal("ListenAndServe:", err)

@@ -20,8 +20,28 @@ func init() {
 }
 
 func main() {
+	log.Printf("32")
 	args := os.Args
 	fmt.Println(args)
 	fmt.Println(task.RandomFloat())
+	ints := make(chan int)
+	go ps(ints)
+	go p(ints)
+	time.Sleep(2 * time.Second)
+}
 
+func p(c chan int) {
+	for {
+		log.Printf("324")
+		i := <-c
+		fmt.Println(i)
+		close(c)
+		break
+	}
+}
+func ps(c chan<- int) {
+	for {
+		c <- 23333333
+		break
+	}
 }
