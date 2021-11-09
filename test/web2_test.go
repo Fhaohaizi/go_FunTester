@@ -10,14 +10,13 @@ import (
 )
 
 func TestMn2(t *testing.T) {
-	url := "wss://wspri.coinall.ltd:8443/ws/v5/public"
-	dial, er := websocket.Dial(url, "", "/ws/v5/public")
+	url := "ws://localhost:1234/websocket"
+	dial, er := websocket.Dial(url, "", "/websocket")
 	if er != nil {
 		fmt.Println(er)
-		fmt.Println(324)
 		return
 	}
-	err := websocket.Message.Send(dial, "{\"op\":\"subscribe\",\"args\":[{\"channel\":\"candle1m\",\"instId\":\"LTC-USDT\"}]}")
+	err := websocket.Message.Send(dial, "你好,我是FunTester - Go ,Have Fun ~ Tester ！")
 
 	if err != nil {
 		fmt.Println(err)
@@ -37,9 +36,6 @@ func TestMn2(t *testing.T) {
 	<-ints
 }
 
-var cons = make(map[int]*websocket.Conn)
-var i int = 1
-
 func Echo(ws *websocket.Conn) {
 	var err error
 	for {
@@ -48,9 +44,6 @@ func Echo(ws *websocket.Conn) {
 			fmt.Println("receive failed:", err)
 			break
 		}
-		for k, con := range cons {
-			sendMessage("你发错了", k, con)
-		}
 		log.Printf("收到消息:%s", reply)
 		msg := string(time.Now().String())
 		websocket.Message.Send(ws, msg)
@@ -58,18 +51,9 @@ func Echo(ws *websocket.Conn) {
 
 }
 
-func sendMessage(msg string, k int, s *websocket.Conn) {
-	if err := websocket.Message.Send(s, msg); err != nil {
-		fmt.Println("Can't send")
-		delete(cons, k)
-	}
-
-}
-
 func TestSer(t *testing.T) {
 	//接受websocket的路由地址
-	http.Handle("/websocket", websocket.Handler(Echo))
-	http.HandleFunc("/t", func(w http.ResponseWriter, req *http.Request) {
+	http.HandleFunc("/websocket", func(w http.ResponseWriter, req *http.Request) {
 		s := websocket.Server{Handler: websocket.Handler(Echo)}
 		s.ServeHTTP(w, req)
 	})

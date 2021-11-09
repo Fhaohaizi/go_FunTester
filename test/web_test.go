@@ -1,14 +1,10 @@
 package test
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
-	"net"
 	"net/http"
-	"os"
-	"strings"
 	"testing"
 	"time"
 )
@@ -43,31 +39,6 @@ func TestWebSocket(t *testing.T) {
 	fmt.Println(s)
 
 }
-func connHandler(c net.Conn) {
-	defer c.Close()
-
-	reader := bufio.NewReader(os.Stdin)
-	buf := make([]byte, 1024)
-	c.Write([]byte("你好,我是FunTester!"))
-	for {
-		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(input)
-
-		if input == "quit" {
-			return
-		}
-
-		c.Write([]byte(input))
-
-		cnt, err := c.Read(buf)
-		if err != nil {
-			fmt.Printf("Fail to read data, %s\n", err)
-			continue
-		}
-
-		fmt.Print(string(buf[0:cnt]))
-	}
-}
 
 func TestWEBs(t *testing.T) {
 
@@ -81,12 +52,10 @@ func TestWEBs(t *testing.T) {
 		conn, _ := upgrader.Upgrade(w, r, nil) // error ignored for sake of simplicity
 
 		for {
-			// Read message from browser
 			msgType, msg, err := conn.ReadMessage()
 			if err != nil {
 				return
 			}
-			// Print the message to the console
 			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
 
 			if err = conn.WriteMessage(msgType, msg); err != nil {

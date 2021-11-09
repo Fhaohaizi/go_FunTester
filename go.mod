@@ -20,6 +20,7 @@ require (
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator/v10 v10.2.0 // indirect
 	github.com/golang/protobuf v1.3.3 // indirect
+	github.com/golang/snappy v0.0.3 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/klauspost/compress v1.13.4 // indirect
@@ -30,14 +31,15 @@ require (
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742 // indirect
+	github.com/syndtr/goleveldb v1.0.0
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.30.0
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
-	golang.org/x/net v0.0.0-20210510120150-4163338589ed // indirect
+	golang.org/x/net v0.0.0-20210510120150-4163338589ed
 	golang.org/x/sys v0.0.0-20210514084401-e8d321eab015 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
-	github.com/gorilla/websocket v1.4.2
+
 )
