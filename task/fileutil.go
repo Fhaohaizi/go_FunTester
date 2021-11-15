@@ -2,12 +2,11 @@ package task
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
-	"io/fs"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -78,13 +77,44 @@ func IOWrite() {
 	}
 }
 
-func Exist(name string) bool {
-	_, err := os.Stat(name)
-	if err == nil {
-		return true
-	}
-	if errors.Is(err, fs.ErrNotExist) {
+func Exist(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil || os.IsExist(err)
+}
+
+// 判断所给路径是否为文件
+func IsFile(path string) bool {
+	return !IsDir(path)
+}
+
+// 判断所给路径是否为文件夹
+func IsDir(path string) bool {
+	s, err := os.Stat(path)
+	if err != nil {
 		return false
 	}
-	return false
+	return s.IsDir()
+}
+
+func CreateDir(path string) {
+	os.MkdirAll(path, os.ModePerm)
+}
+
+func CreateFileDir(filePath string) string {
+	err := os.MkdirAll(filepath.Dir(filePath), 0666)
+	if err == nil {
+		return filePath
+	}
+	return filePath
+}
+
+func CreateDateDir(Path string, time time.Time) string {
+	folderName := time.Format("20060102")
+	folderPath := filepath.Join(Path, folderName)
+	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
+		// 必须分成两步：先创建文件夹、再修改权限
+		os.MkdirAll(folderPath, os.ModePerm)
+		os.Chmod(folderPath, os.ModePerm)
+	}
+	return folderPath
 }

@@ -36,6 +36,9 @@ func TestMn2(t *testing.T) {
 	<-ints
 }
 
+// Echo
+// @Description:WebSocket接口handle
+// @param ws
 func Echo(ws *websocket.Conn) {
 	var err error
 	for {
@@ -51,6 +54,9 @@ func Echo(ws *websocket.Conn) {
 
 }
 
+// TestSer
+// @Description: 创建一个WebSocket接口
+// @param t
 func TestSer(t *testing.T) {
 	//接受websocket的路由地址
 	http.HandleFunc("/websocket", func(w http.ResponseWriter, req *http.Request) {

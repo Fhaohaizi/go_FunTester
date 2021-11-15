@@ -9,9 +9,12 @@ import (
 	"time"
 )
 
+// TestWebSocket
+// @Description: 测试WebSocket脚本
+// @param t
 func TestWebSocket(t *testing.T) {
 
-	url := "wss://wspri.coinall.ltd:8443/ws/v5/public"
+	url := "ws://localhost:1234/websocket"
 	c, res, err := websocket.DefaultDialer.Dial(url, nil)
 	if err != nil {
 		log.Fatal("连接失败:", err)
@@ -23,23 +26,21 @@ func TestWebSocket(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	go func() {
-		defer close(done)
-		for {
-			_, message, err := c.ReadMessage()
-			if err != nil {
-				log.Fatal(err)
-				break
-			}
-			log.Printf("收到消息: %s", message)
-
+	for {
+		_, message, err := c.ReadMessage()
+		if err != nil {
+			log.Fatal(err)
+			break
 		}
-	}()
-	s := <-done
-	fmt.Println(s)
+		log.Printf("收到消息: %s", message)
 
+	}
+	<-done
 }
 
+// TestWEBs 创建一个WebSocket服务
+// @Description:
+// @param t
 func TestWEBs(t *testing.T) {
 
 	var upgrader = websocket.Upgrader{
@@ -48,15 +49,15 @@ func TestWEBs(t *testing.T) {
 		HandshakeTimeout: 5 * time.Second,
 	}
 
-	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
-		conn, _ := upgrader.Upgrade(w, r, nil) // error ignored for sake of simplicity
+	http.HandleFunc("/websocket", func(w http.ResponseWriter, r *http.Request) {
+		conn, _ := upgrader.Upgrade(w, r, nil)
 
 		for {
 			msgType, msg, err := conn.ReadMessage()
 			if err != nil {
 				return
 			}
-			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
+			fmt.Printf("%s receive: %s\n", conn.RemoteAddr(), string(msg))
 
 			if err = conn.WriteMessage(msgType, msg); err != nil {
 				return
