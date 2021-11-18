@@ -1,4 +1,4 @@
-package task
+package funtester
 
 import (
 	"crypto/tls"
@@ -67,8 +67,7 @@ func FastResponse(request *fasthttp.Request) ([]byte, error) {
 	defer fasthttp.ReleaseResponse(response)
 	defer fasthttp.ReleaseRequest(request)
 	if err := FastClient.Do(request, response); err != nil {
-		log.Println("响应出错了")
-		log.Println(err.Error())
+		log.Println("响应出错了", err)
 		return nil, err
 	}
 	return response.Body(), nil

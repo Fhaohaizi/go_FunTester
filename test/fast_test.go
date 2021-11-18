@@ -2,7 +2,7 @@ package test
 
 import (
 	"funtester/ft"
-	"funtester/task"
+	"funtester/funtester"
 	"log"
 	"testing"
 )
@@ -18,8 +18,8 @@ func args() map[string]interface{} {
 }
 
 func TestGet(t *testing.T) {
-	get := task.FastGet(testurl, args())
-	res, err := task.FastResponse(get)
+	get := funtester.FastGet(testurl, args())
+	res, err := funtester.FastResponse(get)
 	if err != nil {
 		t.Fail()
 	}
@@ -31,8 +31,8 @@ func TestGet(t *testing.T) {
 }
 
 func TestPostJson(t *testing.T) {
-	post := task.FastPostJson(testurl, args())
-	res, err := task.FastResponse(post)
+	post := funtester.FastPostJson(testurl, args())
+	res, err := funtester.FastResponse(post)
 	if err != nil {
 		t.Fail()
 	}
@@ -44,8 +44,8 @@ func TestPostJson(t *testing.T) {
 }
 
 func TestPostForm(t *testing.T) {
-	post := task.FastPostForm(testurl, args())
-	res, err := task.FastResponse(post)
+	post := funtester.FastPostForm(testurl, args())
+	res, err := funtester.FastResponse(post)
 	if err != nil {
 		t.Fail()
 	}

@@ -1,7 +1,7 @@
 package test
 
 import (
-	"funtester/task"
+	"funtester/funtester"
 	"github.com/syndtr/goleveldb/leveldb"
 	"log"
 	"testing"
@@ -14,9 +14,9 @@ func TestLeveldb(t *testing.T) {
 		log.Println("创建出错!", err)
 	}
 	fun := []byte("Have Fun ~ Tester ！")
-	db.Put([]byte(task.FunTester), fun, nil)
+	db.Put([]byte(funtester.FunTester), fun, nil)
 	time.Sleep(1 * time.Second)
-	get, _ := db.Get([]byte(task.FunTester), nil)
+	get, _ := db.Get([]byte(funtester.FunTester), nil)
 	log.Printf(string(get))
 
 	db.Delete([]byte("test"), nil)

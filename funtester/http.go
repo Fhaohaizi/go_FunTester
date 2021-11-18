@@ -1,10 +1,11 @@
-package task
+package funtester
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -26,7 +27,7 @@ type Res struct {
 // @return *http.Request
 func Get(uri string, args map[string]interface{}) *http.Request {
 	uri = uri + "?" + ToValues(args)
-	request, _ := http.NewRequest("get", uri, nil)
+	request, _ := http.NewRequest("GET", uri, nil)
 	return request
 }
 
@@ -36,7 +37,7 @@ func Get(uri string, args map[string]interface{}) *http.Request {
 // @param args
 // @return *http.Request
 func PostForm(path string, args map[string]interface{}) *http.Request {
-	request, _ := http.NewRequest("post", path, strings.NewReader(ToValues(args)))
+	request, _ := http.NewRequest("POST", path, strings.NewReader(ToValues(args)))
 	return request
 }
 
@@ -47,7 +48,7 @@ func PostForm(path string, args map[string]interface{}) *http.Request {
 // @return *http.Request
 func PostJson(path string, args map[string]interface{}) *http.Request {
 	marshal, _ := json.Marshal(args)
-	request, _ := http.NewRequest("post", path, bytes.NewReader(marshal))
+	request, _ := http.NewRequest("POST", path, bytes.NewReader(marshal))
 
 	return request
 }
@@ -74,11 +75,9 @@ func ToValues(args map[string]interface{}) string {
 func Response(request *http.Request) []byte {
 	res, err := Client.Do(request)
 	if err != nil {
+		log.Println("响应出错", err)
 		return nil
 	}
-	fmt.Println(res.StatusCode)
-	fmt.Println(res.Cookies())
-	fmt.Println(res.Location())
 	body, _ := ioutil.ReadAll(res.Body) // 读取响应 body, 返回为 []byte
 	defer res.Body.Close()
 	return body

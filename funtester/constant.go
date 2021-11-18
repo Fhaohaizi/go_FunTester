@@ -1,4 +1,4 @@
-package task
+package funtester
 
 const (
 	FunTester = "FunTester"

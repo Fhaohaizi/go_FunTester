@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"funtester/funtester"
 	"github.com/gorilla/websocket"
 	"io"
 	"log"
@@ -23,6 +24,17 @@ func init() {
 var done = make(chan struct{})
 
 func main() {
+	url := "http://localhost:12345/test/fun"
+	get := funtester.Get(url, nil)
+	response := funtester.Response(get)
+	log.Println(string(response))
+
+	fastGet := funtester.FastGet(url, nil)
+	fastResponse, _ := funtester.FastResponse(fastGet)
+	log.Printf(string(fastResponse))
+}
+
+func ManySocket() {
 	args := os.Args
 	var n, t int = 1, 1
 	if len(args) > 1 {
@@ -34,7 +46,6 @@ func main() {
 		t, _ = strconv.Atoi(args[2])
 		log.Printf("创建 %d倍连接", t)
 	}
-
 	for i := 0; i < n; i++ {
 		for i := 0; i < t; i++ {
 			time.Sleep(100 * time.Millisecond)
@@ -45,6 +56,7 @@ func main() {
 	<-done
 	log.Println("结束了")
 }
+
 func getSoecket() {
 	//url := "wss://wspre.okex.com:8443/ws/v5/public"
 	url := "wss://wspri.coinall.ltd:8443/ws/v5/public"
