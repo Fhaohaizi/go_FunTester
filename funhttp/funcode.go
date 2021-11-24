@@ -1,8 +1,9 @@
-package funtester
+package funhttp
 
 import (
 	"bufio"
 	r1 "crypto/rand"
+	"funtester/base"
 	r2 "math/rand"
 	"os"
 	"strings"
@@ -42,7 +43,7 @@ func Workspace() string {
 	if err != nil {
 		return getwd
 	}
-	return Empty
+	return base.Empty
 }
 
 func Once(drive sync.Once, f func()) {

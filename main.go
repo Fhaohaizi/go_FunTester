@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"funtester/funtester"
+	"funtester/funhttp"
 	"github.com/gorilla/websocket"
 	"io"
 	"log"
@@ -25,12 +25,12 @@ var done = make(chan struct{})
 
 func main() {
 	url := "http://localhost:12345/test/fun"
-	get := funtester.Get(url, nil)
-	response := funtester.Response(get)
+	get := funhttp.Get(url, nil)
+	response := funhttp.Response(get)
 	log.Println(string(response))
 
-	fastGet := funtester.FastGet(url, nil)
-	fastResponse, _ := funtester.FastResponse(fastGet)
+	fastGet := funhttp.FastGet(url, nil)
+	fastResponse, _ := funhttp.FastResponse(fastGet)
 	log.Printf(string(fastResponse))
 }
 

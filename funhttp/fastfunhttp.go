@@ -1,4 +1,4 @@
-package funtester
+package funhttp
 
 import (
 	"crypto/tls"

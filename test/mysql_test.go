@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	"funtester/funtester"
+	"funtester/funhttp"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"testing"
@@ -15,7 +15,7 @@ type Funtester struct {
 }
 
 func TestMy(t *testing.T) {
-	db, err := gorm.Open("mysql", "root:root123456@(localhost:3306)/funtester?charset=utf8&parseTime=true")
+	db, err := gorm.Open("mysql", "root:root123456@(localhost:3306)/funhttp?charset=utf8&parseTime=true")
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("mysql conntect err")
@@ -26,7 +26,7 @@ func TestMy(t *testing.T) {
 	db.AutoMigrate(&Funtester{})
 
 	//// Create
-	db.Create(&Funtester{Name: "D42", Age: funtester.RandomInt(1000)})
+	db.Create(&Funtester{Name: "D42", Age: funhttp.RandomInt(1000)})
 	//
 	//// Read
 	var f Funtester
@@ -36,7 +36,7 @@ func TestMy(t *testing.T) {
 	fmt.Println(f.ID)
 
 	//// Update - 将 product 的 price 更新为 200
-	db.Model(&f).Where("name = ?", "D42").Update("Age", funtester.RandomInt(1000))
+	db.Model(&f).Where("name = ?", "D42").Update("Age", funhttp.RandomInt(1000))
 	//// Update - 更新多个字段
 	//db.Model(&product).Updates(Product{Price: 200, Code: "F42"}) // 仅更新非零值字段
 	//db.Model(&product).Updates(map[string]interface{}{"Price": 200, "Code": "F42"})

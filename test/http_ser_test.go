@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	"funtester/funtester"
+	"funtester/base"
 	"github.com/buaazp/fasthttprouter"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/gin-gonic/gin"
@@ -32,7 +32,7 @@ func TestHttpSer(t *testing.T) {
 				fmt.Fprintf(w, "这是net/http创建的server第一种方式")
 				return
 			}
-			fmt.Fprintf(w, funtester.FunTester)
+			fmt.Fprintf(w, base.FunTester)
 			return
 		}),
 	}
@@ -52,7 +52,7 @@ func TestHttpServer4(t *testing.T) {
 	api := router.Group("/test")
 	{
 		api.GET("/fun", gin.HandlerFunc(func(context *gin.Context) {
-			context.JSON(http.StatusOK, funtester.FunTester)
+			context.JSON(http.StatusOK, base.FunTester)
 		}))
 
 	}
@@ -67,7 +67,7 @@ func TestHttpServer4(t *testing.T) {
 }
 func TestHttpSer2(t *testing.T) {
 	http.Handle("/test", &indexHandler{content: "这是net/http第二种创建服务语法"})
-	http.Handle("/", &indexHandler{content: funtester.FunTester})
+	http.Handle("/", &indexHandler{content: base.FunTester})
 	http.ListenAndServe(":8001", nil)
 }
 
@@ -102,7 +102,7 @@ func TestFastSer(t *testing.T) {
 		case "/test":
 			ctx.SetBody([]byte("这是fasthttp创建服务的第一种语法"))
 		default:
-			ctx.SetBody([]byte(funtester.FunTester))
+			ctx.SetBody([]byte(base.FunTester))
 		}
 	}
 	s := &fasthttp.Server{
@@ -123,7 +123,7 @@ func TestFastSer2(t *testing.T) {
 		ctx.Response.SetBody([]byte("这是fasthttp创建server的第二种语法"))
 	})
 	router.GET("/", func(ctx *fasthttp.RequestCtx) {
-		ctx.Response.SetBody([]byte(funtester.FunTester))
+		ctx.Response.SetBody([]byte(base.FunTester))
 	})
 	fasthttp.ListenAndServe(address, router.Handler)
 }

@@ -1,19 +1,17 @@
-package test
+package funwebsocket
 
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
+	websocket2 "golang.org/x/net/websocket"
 	"log"
-	"net/http"
 	"testing"
-	"time"
 )
 
 // TestWebSocket
 // @Description: 测试WebSocket脚本
 // @param t
-func TestWebSocket(t *testing.T) {
-
+func TestWebSocket() {
 	url := "ws://localhost:1234/websocket"
 	c, res, err := websocket.DefaultDialer.Dial(url, nil)
 	if err != nil {
@@ -38,32 +36,32 @@ func TestWebSocket(t *testing.T) {
 	<-done
 }
 
-// TestWEBs 创建一个WebSocket服务
-// @Description:
+// TestWebSocket2
+// @Description: 第二种测试WebSocket的方法
 // @param t
-func TestWEBs(t *testing.T) {
-
-	var upgrader = websocket.Upgrader{
-		ReadBufferSize:   1024,
-		WriteBufferSize:  1024,
-		HandshakeTimeout: 5 * time.Second,
+func TestWebSocket2(t *testing.T) {
+	url := "ws://localhost:1234/websocket"
+	dial, er := websocket2.Dial(url, "", "/websocket")
+	if er != nil {
+		fmt.Println(er)
+		return
 	}
+	err := websocket2.Message.Send(dial, "你好,我是FunTester - Go ,Have Fun ~ Tester ！")
 
-	http.HandleFunc("/websocket", func(w http.ResponseWriter, r *http.Request) {
-		conn, _ := upgrader.Upgrade(w, r, nil)
-
+	if err != nil {
+		fmt.Println(err)
+	}
+	ints := make(chan int)
+	go func() {
+		defer close(ints)
 		for {
-			msgType, msg, err := conn.ReadMessage()
-			if err != nil {
-				return
-			}
-			fmt.Printf("%s receive: %s\n", conn.RemoteAddr(), string(msg))
-
-			if err = conn.WriteMessage(msgType, msg); err != nil {
-				return
+			var m []byte
+			err2 := websocket2.Message.Receive(dial, &m)
+			if err2 == nil {
+				fmt.Println(string(m))
 			}
 		}
-	})
 
-	http.ListenAndServe(":1234", nil)
+	}()
+	<-ints
 }
