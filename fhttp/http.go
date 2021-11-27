@@ -1,4 +1,4 @@
-package funhttp
+package fhttp
 
 import (
 	"bytes"
@@ -24,7 +24,7 @@ type Res struct {
 // @Description:
 // @param uri
 // @param args
-// @return *http.Request
+// @return *fhttp.Request
 func Get(uri string, args map[string]interface{}) *http.Request {
 	uri = uri + "?" + ToValues(args)
 	request, _ := http.NewRequest("GET", uri, nil)
@@ -35,7 +35,7 @@ func Get(uri string, args map[string]interface{}) *http.Request {
 // @Description:
 // @param path
 // @param args
-// @return *http.Request
+// @return *fhttp.Request
 func PostForm(path string, args map[string]interface{}) *http.Request {
 	request, _ := http.NewRequest("POST", path, strings.NewReader(ToValues(args)))
 	return request
@@ -45,7 +45,7 @@ func PostForm(path string, args map[string]interface{}) *http.Request {
 // @Description:
 // @param path
 // @param args
-// @return *http.Request
+// @return *fhttp.Request
 func PostJson(path string, args map[string]interface{}) *http.Request {
 	marshal, _ := json.Marshal(args)
 	request, _ := http.NewRequest("POST", path, bytes.NewReader(marshal))
@@ -85,7 +85,7 @@ func Response(request *http.Request) []byte {
 
 // clients 初始化请求客户端
 // @Description:
-// @return http.Client
+// @return fhttp.Client
 func clients() http.Client {
 	return http.Client{
 		Timeout: time.Duration(5) * time.Second, //超时时间

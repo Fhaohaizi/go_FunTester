@@ -7,7 +7,7 @@ import (
 )
 
 func OpenDB(path string) *leveldb.DB {
-	db, err := leveldb.OpenFile("funhttp", nil)
+	db, err := leveldb.OpenFile("fhttp", nil)
 	if err != nil {
 		log.Fatal("创建出错!", err)
 	}

@@ -1,4 +1,4 @@
-package funwebsocket
+package fwebsocket
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 // @Description: 测试WebSocket脚本
 // @param t
 func TestWebSocket() {
-	url := "ws://localhost:1234/websocket"
+	url := "ws://localhost:1234/fwebsocket"
 	c, res, err := websocket.DefaultDialer.Dial(url, nil)
 	if err != nil {
 		log.Fatal("连接失败:", err)
@@ -40,8 +40,8 @@ func TestWebSocket() {
 // @Description: 第二种测试WebSocket的方法
 // @param t
 func TestWebSocket2(t *testing.T) {
-	url := "ws://localhost:1234/websocket"
-	dial, er := websocket2.Dial(url, "", "/websocket")
+	url := "ws://localhost:1234/fwebsocket"
+	dial, er := websocket2.Dial(url, "", "/fwebsocket")
 	if er != nil {
 		fmt.Println(er)
 		return

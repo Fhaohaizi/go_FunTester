@@ -1,4 +1,4 @@
-package funhttp
+package fhttp
 
 import (
 	"crypto/tls"

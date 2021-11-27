@@ -1,7 +1,7 @@
 package httptest
 
 import (
-	"funtester/funhttp"
+	"funtester/fhttp"
 	"log"
 	"testing"
 	"time"
@@ -10,13 +10,13 @@ import (
 var key bool = false
 
 const (
-	url    = "http://localhost:12345/test/fun"
+	url    = "fhttp://localhost:12345/test/fun"
 	thread = 20
 	times  = 5000
 )
 
 func TestPer(t *testing.T) {
-	get := funhttp.Get(url, nil)
+	get := fhttp.Get(url, nil)
 	c := make(chan int)
 
 	start := time.Now().UnixMilli()
@@ -27,7 +27,7 @@ func TestPer(t *testing.T) {
 				if key {
 					break
 				}
-				funhttp.Response(get)
+				fhttp.Response(get)
 				sum++
 			}
 			key = true
@@ -59,8 +59,8 @@ func TestPerFast(t *testing.T) {
 				if key {
 					break
 				}
-				get := funhttp.FastGet(url, nil)
-				funhttp.FastResponse(get)
+				get := fhttp.FastGet(url, nil)
+				fhttp.FastResponse(get)
 				sum++
 
 			}

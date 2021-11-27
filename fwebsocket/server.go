@@ -1,4 +1,4 @@
-package funwebsocket
+package fwebsocket
 
 import (
 	"fmt"

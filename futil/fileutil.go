@@ -1,4 +1,4 @@
-package funhttp
+package futil
 
 import (
 	"bufio"
