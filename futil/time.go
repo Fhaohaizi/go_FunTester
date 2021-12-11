@@ -19,7 +19,7 @@ func Second() int {
 }
 
 func Sleep(second, milli int) {
-	time.Sleep(time.Duration(second)*time.Second + time.Duration(milli))
+	time.Sleep(time.Duration(second)*time.Second + time.Duration(milli)*time.Millisecond)
 }
 
 func Date() string {
