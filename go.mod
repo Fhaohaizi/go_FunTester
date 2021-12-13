@@ -44,12 +44,14 @@ require (
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/grpc v1.27.0
 	gopkg.in/yaml.v2 v2.2.8 // indirect
-	github.com/tealeg/xlsx v1.0.5
+	gorm.io/driver/sqlite v1.2.6
+	gorm.io/gorm v1.22.3
+
 )
 
 require (
-	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.2 // indirect
+	github.com/mattn/go-sqlite3 v1.14.9 // indirect
 	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55 // indirect
 )

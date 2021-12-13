@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"funtester/futil"
 	"github.com/tealeg/xlsx"
 	"log"
 	"regexp"
@@ -37,4 +38,8 @@ func TestExcel(t *testing.T) {
 		}
 	}
 
+}
+func TestExcel2(t *testing.T) {
+
+	fmt.Println(futil.RandomStr(100))
 }
