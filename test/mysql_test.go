@@ -54,31 +54,59 @@ func TestSelect1(t *testing.T) {
 	take := drive.Take(&f) //不指定顺序
 	fmt.Println(take.RowsAffected)
 }
+func TestSelect2(t *testing.T) {
+	var fs []Funtester
+	var f Funtester
+	drive.Where("id = ?", 45).First(&f)
+	//fmt.Println(f)
+	find := drive.Where("name like ?", "fun%").Find(&fs).Limit(10).Order("id")
+	rows, _ := find.Rows()
+	defer rows.Close()
+	for rows.Next() {
+		var ff Funtester
+		drive.ScanRows(rows, &ff)
+		fmt.Println(ff.Age, ff.Name)
+	}
 
-func TestInsert(t *testing.T) {
-	drive.Create(&Funtester{Name: "D42", Age: futil.RandomInt(1000)})
-	drive.Create(&Tester{Name: "测试" + futil.RandomStr(10), Age: futil.RandomInt(100)})
+	var f1 Funtester
+	drive.Where("name LIKE ?", "fun").Or("id = ?", 123).First(&f1)
+	fmt.Println(f1)
+
 }
 
-func TestMy(t *testing.T) {
+func TestInsert(t *testing.T) {
+	value := &Funtester{Name: "D42" + futil.RandomStr(10)}
+	//drive.Create(value)
+	drive.Select("name", "age").Create(value) //只创建name和age字段的值
+	drive.Omit("age", "name").Create(value)   //过滤age和name字段创建
+	//drive.Create(&Tester{Name: "测试" + futil.RandomStr(10), Age: futil.RandomInt(100)})
+	fs := []Funtester{{Name: "fs" + futil.RandomStr(10), Age: 12}, {Name: "fs" + futil.RandomStr(10), Age: 12}}
+	drive.Create(fs)
 
-	//// Read
-	var f Funtester
-	drive.First(&f, 34) // 根据整形主键查找
-	//db.First(&f, "age = ?", "21") // 查找 code 字段值为 D42 的记录
+}
+func TestUpdate(t *testing.T) {
+	drive.Model(&Funtester{}).Where("id = ?", 241860).Update("name", base.FunTester+"3")
+}
+func TestDelete(t *testing.T) {
+	db := drive.Where("id = ?", 241859).Delete(&Funtester{})
+	fmt.Println(db.RowsAffected)
 
-	fmt.Println(f.ID)
-	rows, _ := drive.Model(&f).Where("age > ?", 20).Rows()
-	//rows.
-	rows.Close()
-	//// Update - 将 product 的 price 更新为 200
-	drive.Model(&f).Where("name = ?", "D42").Update("Age", futil.RandomInt(1000))
-	//// Update - 更新多个字段
-	//db.Model(&product).Updates(Product{Price: 200, Code: "F42"}) // 仅更新非零值字段
-	//db.Model(&product).Updates(map[string]interface{}{"Price": 200, "Code": "F42"})
-	//
-	//// Delete - 删除 product
-	drive.Model(&f).Where("name = ?", "D42").Delete(&f)
-	drive.Delete(&f, 1)
-	drive.Close()
+}
+
+func TestSql(t *testing.T) {
+	funtester := Funtester{}
+	scan := drive.Raw("select * from funtesters where id = 3333").Scan(&funtester)
+	fmt.Println(scan.RowsAffected)
+	fmt.Println(funtester)
+
+}
+func TestRollBack(t *testing.T) {
+	funtester := Funtester{Name: base.FunTester, Age: 32232}
+	begin := drive.Begin()
+	err := begin.Create(&funtester).Error
+	if err != nil {
+		begin.Rollback()
+	}
+	begin.Commit()
+
 }
