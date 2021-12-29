@@ -67,7 +67,6 @@ func TestHttpServer4(t *testing.T) {
 }
 func TestHttpSer2(t *testing.T) {
 	http.Handle("/test", &indexHandler{content: "这是net/http第二种创建服务语法"})
-	http.Handle("/", &indexHandler{content: base.FunTester})
 	http.ListenAndServe(":8001", nil)
 }
 

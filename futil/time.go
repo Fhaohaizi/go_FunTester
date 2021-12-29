@@ -18,8 +18,12 @@ func Second() int {
 	return time.Now().Second()
 }
 
-func Sleep(second, milli int) {
+func Sleeps(second, milli int) {
 	time.Sleep(time.Duration(second)*time.Second + time.Duration(milli)*time.Millisecond)
+}
+
+func Sleep(milli int) {
+	time.Sleep(time.Duration(milli) * time.Millisecond)
 }
 
 func Date() string {
