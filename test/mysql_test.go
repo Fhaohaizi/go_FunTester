@@ -13,7 +13,7 @@ import (
 
 var drive *gorm.DB
 
-func init() {
+func init0() {
 	var err error
 	drive, err = gorm.Open("mysql", "root:root123456@(localhost:3306)/funtester?charset=utf8&parseTime=true")
 	if err != nil {
