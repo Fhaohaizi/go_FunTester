@@ -82,3 +82,16 @@ func TestPerFast(t *testing.T) {
 	log.Printf("QPS: %f", float64(total)/float64(diff)*1000.0)
 
 }
+
+func TestFaast(t *testing.T) {
+	url := "http://fun.tester:12345/test"
+	get := fhttp.Get(url, nil)
+	for i := 0; i < 10; i++ {
+		//go log.Println(string(fhttp.Response(get)))
+		go func() {
+			log.Println(string(fhttp.Response(get)))
+		}()
+	}
+	response := fhttp.Response(get)
+	log.Println(string(response))
+}

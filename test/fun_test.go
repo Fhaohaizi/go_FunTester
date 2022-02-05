@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"funtester/base"
 	"funtester/futil"
 	"github.com/tealeg/xlsx"
 	"log"
@@ -45,7 +46,11 @@ func TestExcel(t *testing.T) {
 	}
 
 }
-func TestExcel2(t *testing.T) {
 
-	fmt.Println(futil.RandomStr(100))
+func TestPrint(t *testing.T) {
+	go func() {
+		futil.PrintTime(func() {
+			futil.Sleep(500)
+		}, 1, base.FunTester)
+	}()
 }
