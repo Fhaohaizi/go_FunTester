@@ -42,6 +42,10 @@ func RandomSlice(s []interface{}) interface{} {
 	randomInt := RandomInt(len(s))
 	return s[randomInt]
 }
+func RandomArray(s []struct{}) struct{} {
+	randomInt := RandomInt(len(s))
+	return s[randomInt]
+}
 
 func RandomStrs(s []string) string {
 	randomInt := RandomInt(len(s))
