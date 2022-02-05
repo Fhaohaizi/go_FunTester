@@ -12,9 +12,11 @@ import (
 )
 
 func init() {
-	os.Mkdir("./log/", 0666)
+	os.Mkdir("./log/", 0766)
 	//os.Mkdir("./long/", 0666)
 	file := "./log/" + string(time.Now().Format("20060102")) + ".log"
+	println(file)
+	os.Create(file)
 	openFile, _ := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	writer := io.MultiWriter(os.Stdout, openFile)
 	log.SetOutput(writer)
@@ -24,7 +26,7 @@ func init() {
 var done = make(chan struct{})
 
 func main() {
-	url := "fhttp://localhost:12345/test/fun"
+	url := "http://localhost:12345/test/fun"
 	get := fhttp.Get(url, nil)
 	response := fhttp.Response(get)
 	log.Println(string(response))
