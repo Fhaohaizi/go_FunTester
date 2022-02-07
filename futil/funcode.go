@@ -3,6 +3,7 @@ package futil
 import (
 	"bufio"
 	r1 "crypto/rand"
+	"funtester/base"
 	r2 "math/rand"
 	"os"
 	"strings"
@@ -30,6 +31,18 @@ func RandomInt(bound int) int {
 	return r.Intn(bound)
 }
 
+// RangInt
+// @Description: 通过范围
+// @param start 起始值
+// @param end 最大值,不会到达
+// @return int  返回值
+func RangInt(start, end int) int {
+	if end <= start {
+		return base.ErrorInt
+	}
+	return RandomInt(end-start) + start
+}
+
 func RandomStr(bound int) string {
 	var build strings.Builder
 	for i := 0; i < bound; i++ {
@@ -42,11 +55,16 @@ func RandomSlice(s []interface{}) interface{} {
 	randomInt := RandomInt(len(s))
 	return s[randomInt]
 }
+
 func RandomArray(s []struct{}) struct{} {
 	randomInt := RandomInt(len(s))
 	return s[randomInt]
 }
 
+// RandomStrs
+// @Description: 从String切片中随机一个
+// @param s
+// @return string
 func RandomStrs(s []string) string {
 	randomInt := RandomInt(len(s))
 	return s[randomInt]
