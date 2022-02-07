@@ -94,7 +94,11 @@ func clients() http.Client {
 	dialer := &net.Dialer{
 		Timeout: 1 * time.Second,
 	}
-	ndialer, _ := NewDialer(dialer, "8.8.8.8:53")
+	dialer.Resolver = &net.Resolver{
+		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+			return dialer.DialContext(ctx, "tcp", "114.114.114.114:53") // 通过tcp请求nameserver解析域名
+		},
+	}
 
 	return http.Client{
 		Timeout: time.Duration(5) * time.Second, //超时时间
@@ -104,54 +108,32 @@ func clients() http.Client {
 			IdleConnTimeout:       90 * time.Second,
 			TLSHandshakeTimeout:   10 * time.Second,
 			ExpectContinueTimeout: 1 * time.Second,
-			DialContext:           ndialer.DialContext,
-		},
-	}
-}
+			//DialContext:           dialer.DialContext,
+			DialContext: func(ctx context.Context, network, address string) (net.Conn, error) {
+				host, port, err := net.SplitHostPort(address)
+				if err != nil {
+					return nil, err
+				}
+				//通过自定义nameserver获取域名解析的IP
+				//ips, _ := dialer.Resolver.LookupHost(ctx, host)
+				//for _, s := range ips {
+				//	log.Println(s)
+				//}
 
-type Dialer struct {
-	dialer     *net.Dialer
-	resolver   *net.Resolver
-	nameserver string
-}
-
-// NewDialer create a Dialer with user's nameserver.
-func NewDialer(dialer *net.Dialer, nameserver string) (*Dialer, error) {
-	conn, err := dialer.Dial("tcp", nameserver)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-	return &Dialer{
-		dialer: dialer,
-		resolver: &net.Resolver{
-			Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
-				return dialer.DialContext(ctx, "tcp", nameserver)
+				// 创建链接
+				if host == "fun.tester" {
+					ips := []string{"127.0.0.1", "0.0.0.0"}
+					ip := futil.RandomStrs(ips)
+					log.Println(ip)
+					conn, err := dialer.DialContext(ctx, network, ip+":"+port)
+					if err == nil {
+						return conn, nil
+					}
+				}
+				return dialer.DialContext(ctx, network, address)
 			},
 		},
-		nameserver: nameserver, // 用户设置的nameserver
-	}, nil
-}
-
-func (d *Dialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
-	host, port, err := net.SplitHostPort(address)
-	if err != nil {
-		return nil, err
 	}
-	//ips, err := d.resolver.LookupHost(ctx, host) // 通过自定义nameserver查询域名
-	//for _, ip := range ips {
-	// 创建链接
-	println(host)
-	if host == "fun.tester" {
-		i := []string{"127.0.0.1", "0.0.0.0"}
-		strs := futil.RandomStrs(i)
-		log.Println(strs)
-		conn, err := d.dialer.DialContext(ctx, network, strs+":"+port)
-		if err == nil {
-			return conn, nil
-		}
-	}
-	return d.dialer.DialContext(ctx, network, address)
 }
 
 // ParseRes 解析响应
