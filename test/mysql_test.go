@@ -3,10 +3,12 @@ package test
 import (
 	"fmt"
 	"funtester/base"
+	"funtester/execute"
 	"funtester/futil"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"log"
+	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -20,7 +22,7 @@ func init0() {
 		fmt.Println(err)
 		log.Fatalln("mysql conntect err")
 	}
-	drive.DB().SetMaxOpenConns(200)
+	drive.DB().SetMaxOpenConns(1000)
 	drive.DB().SetConnMaxLifetime(10 * time.Second)
 	drive.DB().SetConnMaxIdleTime(10 * time.Second)
 	drive.DB().SetMaxIdleConns(20)
@@ -30,6 +32,30 @@ func init0() {
 	//db.AutoMigrate(&User{}, &Product{}, &Order{})
 	//drive.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&Funtester{})//带参数的迁移
 
+}
+
+func TestSelectP(t *testing.T) {
+	execute.ExecuteRoutineTimes(func() {
+		var f Funtester
+		drive.Where("id = ?").First(&f)
+	}, 1000, 100)
+}
+func TestDeleteP(t *testing.T) {
+	var index int32 = 35
+	execute.ExecuteRoutineTimes(func() {
+		id := atomic.AddInt32(&index, 1)
+		drive.Where("id = ?", id).Delete(&Funtester{})
+	}, 1000, 100)
+}
+func TestUpdateP(t *testing.T) {
+	execute.ExecuteRoutineTimes(func() {
+		drive.Where("id = ?", futil.RangInt(35, 20000)).Update("name", futil.RandomStr(10))
+	}, 1000, 100)
+}
+func TestInsertP(t *testing.T) {
+	execute.ExecuteRoutineTimes(func() {
+		drive.Create(&Funtester{Name: futil.RandomStr(10), Age: futil.RandomInt(100)})
+	}, 1000, 100)
 }
 
 type Funtester struct {

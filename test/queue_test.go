@@ -1,8 +1,10 @@
 package test
 
 import (
-	"funtester/fhttp"
+	"funtester/base"
+	"funtester/execute"
 	"funtester/futil"
+	"github.com/valyala/fasthttp"
 	"log"
 	"net/http"
 	"sync"
@@ -12,11 +14,12 @@ import (
 )
 
 const (
-	url       = "http://localhost:12345/funtester?name=3242423&age=416516515"
+	url       = "http://localhost:12345/funtester"
 	token     = "FunTesterFunTesterFunTesterFunTesterFunTesterFunTesterFunTester"
 	total     = 100_0000
+	length    = 20_0000
 	size      = 10
-	threadNum = 100
+	threadNum = 1
 	piece     = total / size
 )
 
@@ -38,9 +41,7 @@ func TestQueue(t *testing.T) {
 				if l > total {
 					break
 				}
-				get := fhttp.Get(url, nil)
-				get.Header.Add("token", token)
-				get.Header.Add("Connection", "keep-alive")
+				get := getRequest()
 				rs <- get
 			}
 			group.Done()
@@ -67,9 +68,8 @@ func TestConsumer(t *testing.T) {
 				if len(rs) > total {
 					break
 				}
-				get := fhttp.Get(url, nil)
-				get.Header.Add("token", token)
-				get.Header.Add("Connection", "keep-alive")
+				get := getRequest()
+
 				rs <- get
 			}
 			group.Done()
@@ -89,7 +89,7 @@ func TestConsumer(t *testing.T) {
 			for {
 				select {
 				case <-rs:
-				case <-time.After(100 * time.Millisecond):
+				case <-time.After(10 * time.Millisecond):
 					break FUN
 				}
 			}
@@ -108,7 +108,10 @@ func TestConsumer(t *testing.T) {
 
 func TestBoth(t *testing.T) {
 	var index int32 = 0
-	rs := make(chan *http.Request, total+10000)
+	rs := make(chan *http.Request, length)
+	for i := 0; i < length; i++ {
+		rs <- getRequest()
+	}
 	funtester := func() {
 		go func() {
 			for {
@@ -116,9 +119,8 @@ func TestBoth(t *testing.T) {
 				if l > total {
 					break
 				}
-				get := fhttp.Get(url, nil)
-				get.Header.Add("token", token)
-				get.Header.Add("Connection", "keep-alive")
+				get := getRequest()
+
 				rs <- get
 			}
 		}()
@@ -131,7 +133,7 @@ func TestBoth(t *testing.T) {
 			for {
 				select {
 				case <-rs:
-				case <-time.After(100 * time.Millisecond):
+				case <-time.After(10 * time.Millisecond):
 					break FUN
 				}
 			}
@@ -145,6 +147,57 @@ func TestBoth(t *testing.T) {
 	}
 	conwait.Wait()
 	end := futil.Milli()
-	log.Printf("平均每毫秒速率%d", int64(index)/(end-start))
+	log.Printf("平均每毫秒速率:%d", int64(index+length)/(end-start))
 
+}
+
+// TestBase
+// @Description: 基准测试
+// @param t
+func TestBase(t *testing.T) {
+	execute.ExecuteRoutineTimes(func() {
+		getFastRequest()
+	}, total, threadNum*5)
+}
+
+func getRequest() *http.Request {
+	//get, _ := http.NewRequest("GET", base.Empty, nil)
+
+	//get,_ := http.NewRequest("GET",url, nil)
+	//get.Header.Add("token", token)
+	//get.Header.Add("Connection", base.Connection_Alive)
+	//get.Header.Add("User-Agent", base.UserAgent)
+
+	get, _ := http.NewRequest("GET", url, nil)
+	get.Header.Add("token", token)
+	get.Header.Add("token1", token)
+	get.Header.Add("token2", token)
+	get.Header.Add("token3", token)
+	get.Header.Add("token4", token)
+	get.Header.Add("token5", token)
+	get.Header.Add("Connection", base.Connection_Alive)
+	get.Header.Add("User-Agent", base.UserAgent)
+
+	return get
+}
+
+func getFastRequest() *fasthttp.Request {
+	get := fasthttp.AcquireRequest()
+	get.Header.SetMethod("GET")
+	//get.SetRequestURI(base.Empty)
+	get.SetRequestURI(url)
+	//get.Header.Add("token", token)
+	//get.Header.Add("Connection", base.Connection_Alive)
+	//get.Header.Add("User-Agent", base.UserAgent)
+
+	get.Header.Add("token", token)
+	get.Header.Add("token1", token)
+	get.Header.Add("token2", token)
+	get.Header.Add("token3", token)
+	get.Header.Add("token4", token)
+	get.Header.Add("token5", token)
+	get.Header.Add("Connection", base.Connection_Alive)
+	get.Header.Add("User-Agent", base.UserAgent)
+
+	return get
 }
