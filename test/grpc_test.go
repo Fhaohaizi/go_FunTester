@@ -3,6 +3,7 @@ package test
 import (
 	"context"
 	"fmt"
+	"funtester/futil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
@@ -13,42 +14,49 @@ import (
 	pb "funtester/proto"
 )
 
-const address = "127.0.0.1:50051"
+const address = "127.0.0.1:12345"
 
+// TestGrpcClient
+// @Description: gRPC客户端Demo
+// @param t
 func TestGrpcClient(t *testing.T) {
-	// Set up a connection to the server.
-	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
+	conn, _ := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
 	defer conn.Close()
 	c := pb.NewHelloServiceClient(conn)
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.ExecuteHi(ctx, &pb.HelloRequest{
+	r, _ := c.ExecuteHi(ctx, &pb.HelloRequest{
 		Name: "FunTester",
 		Age:  23,
 	})
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
+	fmt.Printf("msg: %s\n", r.Msg)
+
+}
+func TestGrpcClient2(t *testing.T) {
+	conn, _ := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+	defer conn.Close()
+	c := pb.NewHelloServiceClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, _ := c.ExecuteHi(ctx, &pb.HelloRequest{
+		Name: "FunTester",
+		Age:  23,
+	})
 	fmt.Printf("msg: %s\n", r.Msg)
 
 }
 
 type Ser struct {
-	//pb.HelloServiceServer
 }
 
 func (s *Ser) ExecuteHi(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) {
 	// 创建一个HelloReply消息，设置Message字段，然后直接返回。
-	return &pb.HelloResponse{Msg: "Hello " + in.Name}, nil
+	return &pb.HelloResponse{Msg: "Hello " + in.Name + futil.Date()}, nil
 }
 
 func TestGrpcService(t *testing.T) {
-	// 监听127.0.0.1:50051地址
-	lis, err := net.Listen("tcp", "127.0.0.1:50051")
+	// 监听127.0.0.1:12345
+	lis, err := net.Listen("tcp", "127.0.0.1:12345")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -65,4 +73,11 @@ func TestGrpcService(t *testing.T) {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+}
+
+type StreamDemo struct {
+}
+
+func (s *StreamDemo) ExecuteHi(req *pb.DemoRequest, ser pb.StreamDemo_ExecuteHiServer) {
+
 }

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package="./;proto";
+
+service StreamDemo {
+  rpc ExecuteHi(DemoRequest) returns (stream DemoResponse) {};
+}
+
+message DemoRequest {
+  string name = 1;
+  int32 age = 2;
+}
+
+message DemoResponse {
+  string msg = 1;
+}
