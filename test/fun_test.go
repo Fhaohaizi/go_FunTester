@@ -3,7 +3,7 @@ package test
 import (
 	"fmt"
 	"funtester/base"
-	"funtester/futil"
+	"funtester/ftool"
 	"github.com/tealeg/xlsx"
 	"log"
 	"regexp"
@@ -27,9 +27,9 @@ func TestFun(t *testing.T) {
 }
 func TestExce1l(t *testing.T) {
 	str := "0001a111222a22a"
-	//fmt.Println(futil.Match(str,"\\d+"))
-	//fmt.Println(futil.Find(str,"\\d+"))
-	fmt.Println(futil.FindAll(str, "\\d+"))
+	//fmt.Println(ftool.Match(str,"\\d+"))
+	//fmt.Println(ftool.Find(str,"\\d+"))
+	fmt.Println(ftool.FindAll(str, "\\d+"))
 }
 
 func TestExcel(t *testing.T) {
@@ -49,8 +49,8 @@ func TestExcel(t *testing.T) {
 
 func TestPrint(t *testing.T) {
 	go func() {
-		futil.PrintTime(func() {
-			futil.Sleep(500)
+		ftool.PrintTime(func() {
+			ftool.Sleep(500)
 		}, 1, base.FunTester)
 	}()
 }

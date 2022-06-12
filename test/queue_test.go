@@ -3,7 +3,7 @@ package test
 import (
 	"funtester/base"
 	"funtester/execute"
-	"funtester/futil"
+	"funtester/ftool"
 	"github.com/valyala/fasthttp"
 	"log"
 	"net/http"
@@ -28,13 +28,13 @@ func TestQueue(t *testing.T) {
 	rs := make(chan *http.Request, total+10000)
 	var group sync.WaitGroup
 	group.Add(threadNum)
-	milli := futil.Milli()
+	milli := ftool.Milli()
 	funtester := func() {
 		go func() {
 			for {
 				l := atomic.AddInt32(&index, 1)
 				if l%piece == 0 {
-					m := futil.Milli()
+					m := ftool.Milli()
 					log.Println(m - milli)
 					milli = m
 				}
@@ -47,12 +47,12 @@ func TestQueue(t *testing.T) {
 			group.Done()
 		}()
 	}
-	start := futil.Milli()
+	start := ftool.Milli()
 	for i := 0; i < threadNum; i++ {
 		funtester()
 	}
 	group.Wait()
-	end := futil.Milli()
+	end := ftool.Milli()
 
 	log.Println(atomic.LoadInt32(&index))
 	log.Printf("平均每毫秒速率%d", total/(end-start))
@@ -96,12 +96,12 @@ func TestConsumer(t *testing.T) {
 			conwait.Done()
 		}()
 	}
-	start := futil.Milli()
+	start := ftool.Milli()
 	for i := 0; i < threadNum; i++ {
 		consumer()
 	}
 	conwait.Wait()
-	end := futil.Milli()
+	end := ftool.Milli()
 	log.Printf("平均每毫秒速率%d", totalActual/(end-start))
 
 }
@@ -140,13 +140,13 @@ func TestBoth(t *testing.T) {
 			conwait.Done()
 		}()
 	}
-	start := futil.Milli()
+	start := ftool.Milli()
 	for i := 0; i < threadNum; i++ {
 		consumer()
 		funtester()
 	}
 	conwait.Wait()
-	end := futil.Milli()
+	end := ftool.Milli()
 	log.Printf("平均每毫秒速率:%d", int64(index+length)/(end-start))
 
 }

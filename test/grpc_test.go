@@ -3,7 +3,7 @@ package test
 import (
 	"context"
 	"fmt"
-	"funtester/futil"
+	"funtester/ftool"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
@@ -51,7 +51,7 @@ type Ser struct {
 
 func (s *Ser) ExecuteHi(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) {
 	// 创建一个HelloReply消息，设置Message字段，然后直接返回。
-	return &pb.HelloResponse{Msg: "Hello " + in.Name + futil.Date()}, nil
+	return &pb.HelloResponse{Msg: "Hello " + in.Name + ftool.Date()}, nil
 }
 
 func TestGrpcService(t *testing.T) {

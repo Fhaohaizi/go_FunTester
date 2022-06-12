@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"funtester/base"
 	"funtester/execute"
-	"funtester/futil"
+	"funtester/ftool"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"log"
@@ -49,12 +49,12 @@ func TestDeleteP(t *testing.T) {
 }
 func TestUpdateP(t *testing.T) {
 	execute.ExecuteRoutineTimes(func() {
-		drive.Where("id = ?", futil.RangInt(35, 20000)).Update("name", futil.RandomStr(10))
+		drive.Where("id = ?", ftool.RangInt(35, 20000)).Update("name", ftool.RandomStr(10))
 	}, 1000, 100)
 }
 func TestInsertP(t *testing.T) {
 	execute.ExecuteRoutineTimes(func() {
-		drive.Create(&Funtester{Name: futil.RandomStr(10), Age: futil.RandomInt(100)})
+		drive.Create(&Funtester{Name: ftool.RandomStr(10), Age: ftool.RandomInt(100)})
 	}, 1000, 100)
 }
 
@@ -104,11 +104,11 @@ func TestSelect2(t *testing.T) {
 // @Description: 增加
 // @param t
 func TestInsert(t *testing.T) {
-	value := &Funtester{Name: "FunTester" + futil.RandomStr(10)}
+	value := &Funtester{Name: "FunTester" + ftool.RandomStr(10)}
 	drive.Create(value)
 	drive.Select("name", "age").Create(value)                           //只创建name和age字段的值
 	drive.Omit("age", "name").Create(&Funtester{Name: "fds", Age: 122}) //过滤age和name字段创建
-	fs := []Funtester{{Name: "fs" + futil.RandomStr(10), Age: 12}, {Name: "fs" + futil.RandomStr(10), Age: 12}}
+	fs := []Funtester{{Name: "fs" + ftool.RandomStr(10), Age: 12}, {Name: "fs" + ftool.RandomStr(10), Age: 12}}
 	drive.Create(&fs) //这里不支持这么操作的
 }
 
