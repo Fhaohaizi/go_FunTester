@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"funtester/futil"
+	"funtester/ftool"
 	"io/ioutil"
 	"log"
 	"net"
@@ -65,7 +65,7 @@ func ToValues(args map[string]interface{}) string {
 	if args != nil && len(args) > 0 {
 		params := url.Values{}
 		for k, v := range args {
-			params.Set(k, futil.ToString(v))
+			params.Set(k, ftool.ToString(v))
 		}
 		return params.Encode()
 	}
@@ -123,7 +123,7 @@ func clients() http.Client {
 				// 创建链接
 				if host == "fun.tester" {
 					ips := []string{"127.0.0.1", "0.0.0.0"}
-					ip := futil.RandomStrs(ips)
+					ip := ftool.RandomStrs(ips)
 					log.Println(ip)
 					conn, err := dialer.DialContext(ctx, network, ip+":"+port)
 					if err == nil {

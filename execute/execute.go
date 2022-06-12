@@ -1,7 +1,7 @@
 package execute
 
 import (
-	"funtester/futil"
+	"funtester/ftool"
 	"log"
 	"sync"
 	"time"
@@ -15,7 +15,7 @@ import (
 func ExecuteRoutineTimes(fun func(), t, r int) {
 	c := make(chan int) //确认所有线程都结束
 	key := false        //用于控制所有线程一起结束
-	start := futil.Milli()
+	start := ftool.Milli()
 	for i := 0; i < r; i++ {
 		go func() {
 			sum := 0
@@ -35,7 +35,7 @@ func ExecuteRoutineTimes(fun func(), t, r int) {
 		num := <-c
 		total += num
 	}
-	end := futil.Milli()
+	end := ftool.Milli()
 	diff := end - start
 	//total := thread * times
 	log.Printf("总耗时: %f", float64(diff)/1000)
@@ -48,7 +48,7 @@ func ExecuteRoutineTime(fun func(), t, r int) {
 	key := false        //用于控制所有线程一起结束
 	start := time.Now().UnixMilli()
 	go func() {
-		futil.Sleep(t * 1000)
+		ftool.Sleep(t * 1000)
 		key = true
 	}()
 	for i := 0; i < r; i++ {

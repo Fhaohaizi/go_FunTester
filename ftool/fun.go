@@ -1,4 +1,4 @@
-package futil
+package ftool
 
 import (
 	"fmt"
