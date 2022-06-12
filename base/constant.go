@@ -3,6 +3,7 @@ package base
 const (
 	FunTester        = "FunTester"
 	Empty            = ""
+	TEST_ERROR       = -2
 	Comma            = ","
 	Space            = " "
 	LINE             = "\n\r"
