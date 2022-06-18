@@ -43,6 +43,7 @@ func ExecuteRoutineTimes(fun func(), t, r int) {
 	log.Printf("请求总数: %d", total)
 	log.Printf("QPS: %f", float64(total)/float64(diff)*1000.0)
 }
+
 func ExecuteRoutineTime(fun func(), t, r int) {
 	c := make(chan int) //确认所有线程都结束
 	key := false        //用于控制所有线程一起结束
@@ -77,6 +78,7 @@ func ExecuteRoutineTime(fun func(), t, r int) {
 	log.Printf("请求总数: %d", total)
 	log.Printf("QPS: %f", float64(total)/float64(diff)*1000.0)
 }
+
 func ExecuteTask(task Task) {
 	c := make(chan int) //确认所有线程都结束
 	key := false        //用于控制所有线程一起结束
@@ -107,6 +109,22 @@ func ExecuteTask(task Task) {
 
 	log.Printf("请求总数: %d", total)
 	log.Printf("QPS: %f", float64(total)/float64(diff)*1000.0)
+}
+
+// ExecuteQPS 以固定QPS执行某方法
+//  @Description:
+//  @param task
+//  @param qps
+//
+func ExecuteQPS(task func(), qps int) {
+	for {
+		ftool.Sleep(1000)
+		go func() {
+			for i := 0; i < qps; i++ {
+				task()
+			}
+		}()
+	}
 }
 
 func Once(drive sync.Once, f func()) {
