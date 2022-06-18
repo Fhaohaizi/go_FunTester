@@ -9,44 +9,44 @@ import (
 )
 
 //redis.Options 默认池大小为10×cpu核数
-var pool = redis.NewClient(&redis.Options{
-	Addr: "127.0.0.1:6379",
-	//Password: "",
-	DB:              0,
-	MaxRetries:      3,
-	MinRetryBackoff: 100 * time.Millisecond,
-	DialTimeout:     5 * time.Second,
-	WriteTimeout:    1 * time.Second,
-	PoolSize:        200,
-	MaxConnAge:      10 * time.Second,
-	IdleTimeout:     8 * time.Second,
-})
+
+type RedisBase struct {
+	Host string
+	db   int
+	pool *redis.Client
+}
 
 // init 初始化类,创建连接池
 //  @Description:
 //
-func init() {
-	_, err := pool.Ping().Result()
+func NewRdisPool(host string, db int) RedisBase {
+	redisBase := RedisBase{Host: host, db: db}
+	redisBase.pool = redis.NewClient(&redis.Options{
+		//Password: "",
+		Addr:            host,
+		DB:              0,
+		MaxRetries:      3,
+		MinRetryBackoff: 100 * time.Millisecond,
+		DialTimeout:     5 * time.Second,
+		WriteTimeout:    1 * time.Second,
+		PoolSize:        200,
+		MaxConnAge:      10 * time.Second,
+		IdleTimeout:     8 * time.Second,
+	})
+	_, err := redisBase.pool.Ping().Result()
 	if err != nil {
 		log.Fatal("连接失败", err)
 	}
 	log.Println("Redis 连接成功")
-	ping := Ping()
+	ping := redisBase.Ping()
 	if ping == "PONG" {
 		log.Println("确认连接成功!")
 	}
+	return redisBase
 }
 
-// GetClient 获取Redis连接
-//  @Description:
-//  @return *redis.Client
-//
-func GetClient() *redis.Client {
-	return pool
-}
-
-func Ping() string {
-	ping := pool.Ping()
+func (r RedisBase) Ping() string {
+	ping := r.pool.Ping()
 	result, err := ping.Result()
 	if err != nil {
 		log.Println("确认连接失败")
@@ -59,8 +59,8 @@ func Ping() string {
 //  @param patten
 //  @return []string
 //
-func Keys(patten string) []string {
-	result, err := pool.Keys(patten).Result()
+func (r RedisBase) Keys(patten string) []string {
+	result, err := r.pool.Keys(patten).Result()
 	if err != nil {
 		log.Printf("获取keys: %s 失败%s\n", patten, err.Error())
 		return nil
@@ -75,8 +75,8 @@ func Keys(patten string) []string {
 //  @param expiration
 //  @return string
 //
-func Set(key string, value interface{}, expiration time.Duration) string {
-	result, err := pool.Set(key, value, expiration).Result()
+func (r RedisBase) Set(key string, value interface{}, second time.Duration) string {
+	result, err := r.pool.Set(key, value, time.Duration(second)*time.Second).Result()
 	if err != nil {
 		log.Printf("set:%s value: %s 失败\n", key, value)
 		return base.Empty
@@ -89,8 +89,8 @@ func Set(key string, value interface{}, expiration time.Duration) string {
 //  @param key
 //  @return string
 //
-func Get(key string) string {
-	result, err := pool.Get(key).Result()
+func (r RedisBase) Get(key string) string {
+	result, err := r.pool.Get(key).Result()
 	if err != nil {
 		log.Printf("get:%s 失败\n", key)
 		return base.Empty
@@ -104,8 +104,8 @@ func Get(key string) string {
 //  @param value
 //  @return string
 //
-func GetSet(key string, value interface{}) string {
-	result, err := pool.GetSet(key, value).Result()
+func (r RedisBase) GetSet(key string, value interface{}) string {
+	result, err := r.pool.GetSet(key, value).Result()
 	if err != nil {
 		log.Printf("set:%s value: %s 失败\n", key, value)
 		return base.Empty
@@ -120,8 +120,8 @@ func GetSet(key string, value interface{}) string {
 //  @param expiration
 //  @return bool
 //
-func SetNX(key string, value interface{}, expiration time.Duration) bool {
-	result, err := pool.SetNX(key, value, expiration).Result()
+func (r RedisBase) SetNX(key string, value interface{}, second int64) bool {
+	result, err := r.pool.SetNX(key, value, time.Duration(second)*time.Second).Result()
 	if err != nil {
 		log.Printf("set:%s value: %s 失败\n", key, value)
 		return false
@@ -136,8 +136,8 @@ func SetNX(key string, value interface{}, expiration time.Duration) bool {
 //  @param expiration
 //  @return bool
 //
-func MGet(keys ...string) []interface{} {
-	result, err := pool.MGet(keys...).Result()
+func (r RedisBase) MGet(keys ...string) []interface{} {
+	result, err := r.pool.MGet(keys...).Result()
 	if err != nil {
 		log.Printf("获取 keys : %s 失败 %s", fmt.Sprint(keys), err.Error())
 		return nil
@@ -150,8 +150,8 @@ func MGet(keys ...string) []interface{} {
 //  @param keys
 //  @return string
 //
-func MSet(keys ...string) string {
-	result, err := pool.MSet(keys).Result()
+func (r RedisBase) MSet(keys ...string) string {
+	result, err := r.pool.MSet(keys).Result()
 	if err != nil {
 		log.Printf("设置 keys : %s 失败 %s", fmt.Sprint(keys), err.Error())
 		return base.Empty
@@ -164,8 +164,8 @@ func MSet(keys ...string) string {
 //  @param key
 //  @return string
 //
-func Incr(key string) int64 {
-	result, err := pool.Incr(key).Result()
+func (r RedisBase) Incr(key string) int64 {
+	result, err := r.pool.Incr(key).Result()
 	if err != nil {
 		log.Printf("自增 key: %s 失败 %s", key, err.Error())
 		return base.TEST_ERROR
@@ -179,8 +179,8 @@ func Incr(key string) int64 {
 //  @param value
 //  @return string
 //
-func IncrBy(key string, value int64) int64 {
-	result, err := pool.IncrBy(key, value).Result()
+func (r RedisBase) IncrBy(key string, value int64) int64 {
+	result, err := r.pool.IncrBy(key, value).Result()
 	if err != nil {
 		log.Printf("自增 key: %s 失败 %s", key, err.Error())
 		return -1
@@ -193,8 +193,8 @@ func IncrBy(key string, value int64) int64 {
 //  @param key
 //  @return string
 //
-func Decr(key string) int64 {
-	result, err := pool.Decr(key).Result()
+func (r RedisBase) Decr(key string) int64 {
+	result, err := r.pool.Decr(key).Result()
 	if err != nil {
 		log.Printf("自减 key: %s 失败 %s", key, err.Error())
 		return base.TEST_ERROR
@@ -208,8 +208,8 @@ func Decr(key string) int64 {
 //  @param value
 //  @return string
 //
-func DecrBy(key string, value int64) int64 {
-	result, err := pool.DecrBy(key, value).Result()
+func (r RedisBase) DecrBy(key string, value int64) int64 {
+	result, err := r.pool.DecrBy(key, value).Result()
 	if err != nil {
 		log.Printf("自减 key: %s 失败 %s", key, err.Error())
 		return base.TEST_ERROR
@@ -222,8 +222,8 @@ func DecrBy(key string, value int64) int64 {
 //  @param keys
 //  @return int64
 //
-func Del(keys ...string) int64 {
-	result, err := pool.Del(keys...).Result()
+func (r RedisBase) Del(keys ...string) int64 {
+	result, err := r.pool.Del(keys...).Result()
 	if err != nil {
 		log.Printf("删除 key: %s 失败 %s", fmt.Sprintln(keys), err.Error())
 		return base.TEST_ERROR
@@ -237,8 +237,8 @@ func Del(keys ...string) int64 {
 //  @param second
 //  @return bool
 //
-func Expire(key string, second int64) bool {
-	result, err := pool.Expire(key, time.Duration(second)*time.Second).Result()
+func (r RedisBase) Expire(key string, second int64) bool {
+	result, err := r.pool.Expire(key, time.Duration(second)*time.Second).Result()
 	if err != nil {
 		log.Printf("设置 key: %s 过期时间失败 %s", fmt.Sprintln(key), err.Error())
 		return false
