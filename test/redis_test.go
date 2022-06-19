@@ -9,9 +9,8 @@ import (
 	"testing"
 )
 
-var pool = redis.NewRdisPool("127.0.0.1:6379", 1)
-
 func TestRedis(t *testing.T) {
+	var pool = redis.NewRdisPool("127.0.0.1:6379", 1)
 	var str = "FunTester"
 	set := pool.Set("fun", str, 0)
 	log.Print(set)
