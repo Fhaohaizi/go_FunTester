@@ -8,7 +8,9 @@ import (
 	"log"
 	"regexp"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 )
 
 func TestFun(t *testing.T) {
@@ -53,4 +55,34 @@ func TestPrint(t *testing.T) {
 			ftool.Sleep(500)
 		}, 1, base.FunTester)
 	}()
+}
+
+func TestOnce(t *testing.T) {
+	var group sync.WaitGroup
+	var once sync.Once
+	for i := 0; i < 10; i++ {
+		group.Add(1)
+		go func() {
+			log.Printf("异步执行%d 次", i)
+			once.Do(func() {
+				log.Println("执行一次")
+			})
+			group.Done()
+		}()
+	}
+	group.Wait()
+}
+
+// TestOnceSimple once对象简单测试
+//  @Description:
+//  @param t
+//
+func TestOnceSimple(t *testing.T) {
+	var once sync.Once
+	for i := 0; i < 10; i++ {
+		go once.Do(func() {
+			log.Println("执行一次")
+		})
+	}
+	time.Sleep(time.Second)
 }
