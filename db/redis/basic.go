@@ -122,7 +122,7 @@ func (r RedisBase) Incr(key string) int64 {
 	result, err := r.pool.Incr(key).Result()
 	if err != nil {
 		log.Printf("自增 key: %s 失败 %s", key, err.Error())
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
@@ -151,7 +151,7 @@ func (r RedisBase) Decr(key string) int64 {
 	result, err := r.pool.Decr(key).Result()
 	if err != nil {
 		log.Printf("自减 key: %s 失败 %s", key, err.Error())
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
@@ -166,7 +166,7 @@ func (r RedisBase) DecrBy(key string, value int64) int64 {
 	result, err := r.pool.DecrBy(key, value).Result()
 	if err != nil {
 		log.Printf("自减 key: %s 失败 %s", key, err.Error())
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
@@ -180,7 +180,7 @@ func (r RedisBase) Del(keys ...string) int64 {
 	result, err := r.pool.Del(keys...).Result()
 	if err != nil {
 		log.Printf("删除 key: %s 失败 %s", fmt.Sprintln(keys), err.Error())
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }

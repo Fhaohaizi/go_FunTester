@@ -1,6 +1,7 @@
 package test
 
 import (
+	"funtester/base"
 	"funtester/db/redis"
 	"funtester/ftool"
 	"github.com/go-playground/assert/v2"
@@ -10,7 +11,7 @@ import (
 )
 
 func TestRedis(t *testing.T) {
-	var pool = redis.NewRdisPool("127.0.0.1:6379", 1)
+	var pool = redis.NewRdisPool("127.0.0.1:6379", base.Empty, 1)
 	var str = "FunTester"
 	set := pool.Set("fun", str, 0)
 	log.Print(set)
@@ -46,4 +47,11 @@ func TestRedis(t *testing.T) {
 	}
 	pool.Decr("aa")
 	pool.Expire("sum", 100)
+}
+
+func TestChannelRedis(t *testing.T) {
+	var pool = redis.NewRdisPool("127.0.0.1:6379", base.Empty, 1)
+	//pool.XAdd(nil)
+	pool.XRead(nil)
+
 }

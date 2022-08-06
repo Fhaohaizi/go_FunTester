@@ -52,3 +52,12 @@ func (r RedisBase) Ping() string {
 	}
 	return result
 }
+
+// Pool
+//  @Description: 获取Redis客户端
+//  @receiver r
+//  @return *redis.Client
+//
+func (r RedisBase) Pool() *redis.Client {
+	return r.pool
+}

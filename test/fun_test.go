@@ -49,6 +49,26 @@ func TestExcel(t *testing.T) {
 
 }
 
+func TestChannel(t *testing.T) {
+	c := make(chan int)
+	go func() {
+		//for {
+		ftool.Sleep(100)
+		c <- ftool.RandomInt(100)
+		close(c)
+		//}
+	}()
+	for {
+
+		num, ok := <-c
+		log.Println(num)
+		log.Println(ok)
+		if !ok {
+			break
+		}
+	}
+}
+
 func TestPrint(t *testing.T) {
 	go func() {
 		ftool.PrintTime(func() {

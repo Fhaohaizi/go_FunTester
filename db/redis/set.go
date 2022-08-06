@@ -18,7 +18,7 @@ func (r RedisBase) SAdd(key string, members ...interface{}) int64 {
 	if err != nil {
 		log.Printf("sadd key:%s,members:%s fail\n", key, ftool.ToString(members))
 		log.Println(err)
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
@@ -34,7 +34,7 @@ func (r RedisBase) SCard(key string) int64 {
 	if err != nil {
 		log.Printf("scard key:%s fail\n", key)
 		log.Println(err)
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
@@ -83,7 +83,7 @@ func (r RedisBase) SRem(key string, members ...interface{}) int64 {
 	if err != nil {
 		log.Printf("srem key:%s members:%s fail\n", key, ftool.ToString(members))
 		log.Println(err)
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }

@@ -165,7 +165,7 @@ func getRequest() *http.Request {
 
 	//get,_ := http.NewRequest("GET",url, nil)
 	//get.Header.Add("token", token)
-	//get.Header.Add("Connection", base.Connection_Alive)
+	//get.Header.Add("Connection", base.ConnectionAlive)
 	//get.Header.Add("User-Agent", base.UserAgent)
 
 	get, _ := http.NewRequest("GET", url, nil)
@@ -175,7 +175,7 @@ func getRequest() *http.Request {
 	get.Header.Add("token3", token)
 	get.Header.Add("token4", token)
 	get.Header.Add("token5", token)
-	get.Header.Add("Connection", base.Connection_Alive)
+	get.Header.Add("Connection", base.ConnectionAlive)
 	get.Header.Add("User-Agent", base.UserAgent)
 
 	return get
@@ -187,7 +187,7 @@ func getFastRequest() *fasthttp.Request {
 	//get.SetRequestURI(base.Empty)
 	get.SetRequestURI(url)
 	//get.Header.Add("token", token)
-	//get.Header.Add("Connection", base.Connection_Alive)
+	//get.Header.Add("Connection", base.ConnectionAlive)
 	//get.Header.Add("User-Agent", base.UserAgent)
 
 	get.Header.Add("token", token)
@@ -196,7 +196,7 @@ func getFastRequest() *fasthttp.Request {
 	get.Header.Add("token3", token)
 	get.Header.Add("token4", token)
 	get.Header.Add("token5", token)
-	get.Header.Add("Connection", base.Connection_Alive)
+	get.Header.Add("Connection", base.ConnectionAlive)
 	get.Header.Add("User-Agent", base.UserAgent)
 
 	return get

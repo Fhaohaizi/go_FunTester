@@ -70,7 +70,7 @@ func (r RedisBase) HIncrBy(key, field string, incr int64) int64 {
 	if err != nil {
 		log.Printf("hincrby key:%s field:%s,incr: %d fail\n", key, field, incr)
 		log.Println(err)
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
@@ -102,7 +102,7 @@ func (r RedisBase) HLen(key string) int64 {
 	if err != nil {
 		log.Printf("HLen key:%s fail\n", key)
 		log.Println(err)
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
@@ -170,7 +170,7 @@ func (r RedisBase) HDel(key string, field ...string) int64 {
 	if err != nil {
 		log.Printf("hdel key:%s ,field: %s fail\n", key, ftool.ToString(field))
 		log.Println(err)
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }

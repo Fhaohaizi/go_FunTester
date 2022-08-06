@@ -18,7 +18,7 @@ func (r RedisBase) LPush(key string, value interface{}) int64 {
 	if err != nil {
 		log.Printf("LPush:%s value: %s 失败\n", key, value)
 		log.Println(err)
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
@@ -35,7 +35,7 @@ func (r RedisBase) RPush(key string, value interface{}) int64 {
 	if err != nil {
 		log.Printf("RPush:%s value: %s 失败\n", key, value)
 		log.Println(err)
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
@@ -85,7 +85,7 @@ func (r RedisBase) LLen(key string) int64 {
 	if err != nil {
 		log.Printf("LLen :%s 失败\n", key)
 		log.Println(err)
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
@@ -125,7 +125,7 @@ func (r RedisBase) LRem(key string, count int64, value interface{}) int64 {
 	if err != nil {
 		log.Printf("LRem :%s count: %d value: %s 失败\n", key, count, value)
 		log.Println(err)
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
@@ -160,7 +160,7 @@ func (r RedisBase) LInsertBefore(key string, pivot, value interface{}) int64 {
 	if err != nil {
 		log.Printf("LInsertBefore :%s pivot: %s value:%s 失败\n", key, pivot, value)
 		log.Println(err)
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
@@ -178,7 +178,7 @@ func (r RedisBase) LInsertAfter(key string, pivot, value interface{}) int64 {
 	if err != nil {
 		log.Printf("LInsertAfter :%s pivot: %s value:%s 失败\n", key, pivot, value)
 		log.Println(err)
-		return base.TEST_ERROR
+		return base.TestError
 	}
 	return result
 }
