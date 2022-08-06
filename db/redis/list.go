@@ -17,6 +17,7 @@ func (r RedisBase) LPush(key string, value interface{}) int64 {
 	result, err := r.pool.LPushX(key, value).Result()
 	if err != nil {
 		log.Printf("LPush:%s value: %s 失败\n", key, value)
+		log.Println(err)
 		return base.TEST_ERROR
 	}
 	return result
@@ -33,6 +34,7 @@ func (r RedisBase) RPush(key string, value interface{}) int64 {
 	result, err := r.pool.RPush(key, value).Result()
 	if err != nil {
 		log.Printf("RPush:%s value: %s 失败\n", key, value)
+		log.Println(err)
 		return base.TEST_ERROR
 	}
 	return result
@@ -49,6 +51,7 @@ func (r RedisBase) LPop(key string, second time.Duration) string {
 	result, err := r.pool.LPop(key).Result()
 	if err != nil {
 		log.Printf("LPop:%s 失败\n", key)
+		log.Println(err)
 		return base.Empty
 	}
 	return result
@@ -65,6 +68,7 @@ func (r RedisBase) RPop(key string, second time.Duration) string {
 	result, err := r.pool.RPop(key).Result()
 	if err != nil {
 		log.Printf("RPop:%s 失败\n", key)
+		log.Println(err)
 		return base.Empty
 	}
 	return result
@@ -79,7 +83,8 @@ func (r RedisBase) RPop(key string, second time.Duration) string {
 func (r RedisBase) LLen(key string) int64 {
 	result, err := r.pool.LLen(key).Result()
 	if err != nil {
-		log.Printf("LLen :%s 失败", key)
+		log.Printf("LLen :%s 失败\n", key)
+		log.Println(err)
 		return base.TEST_ERROR
 	}
 	return result
@@ -96,7 +101,8 @@ func (r RedisBase) LLen(key string) int64 {
 func (r RedisBase) LRange(key string, start, end int64) []string {
 	result, err := r.pool.LRange(key, start, end).Result()
 	if err != nil {
-		log.Printf("LRange :%s 失败", key)
+		log.Printf("LRange :%s 失败\n", key)
+		log.Println(err)
 		return nil
 	}
 	return result
@@ -117,7 +123,8 @@ func (r RedisBase) LRange(key string, start, end int64) []string {
 func (r RedisBase) LRem(key string, count int64, value interface{}) int64 {
 	result, err := r.pool.LRem(key, count, value).Result()
 	if err != nil {
-		log.Printf("LRem :%s count: %d value: %s 失败", key, count, value)
+		log.Printf("LRem :%s count: %d value: %s 失败\n", key, count, value)
+		log.Println(err)
 		return base.TEST_ERROR
 	}
 	return result
@@ -133,7 +140,8 @@ func (r RedisBase) LRem(key string, count int64, value interface{}) int64 {
 func (r RedisBase) LIndex(key string, index int64) string {
 	result, err := r.pool.LIndex(key, index).Result()
 	if err != nil {
-		log.Printf("LIndex :%s index: %d 失败", key, index)
+		log.Printf("LIndex :%s index: %d 失败\n", key, index)
+		log.Println(err)
 		return base.Empty
 	}
 	return result
@@ -150,7 +158,8 @@ func (r RedisBase) LIndex(key string, index int64) string {
 func (r RedisBase) LInsertBefore(key string, pivot, value interface{}) int64 {
 	result, err := r.pool.LInsertBefore(key, pivot, value).Result()
 	if err != nil {
-		log.Printf("LInsertBefore :%s pivot: %s value:%s 失败", key, pivot, value)
+		log.Printf("LInsertBefore :%s pivot: %s value:%s 失败\n", key, pivot, value)
+		log.Println(err)
 		return base.TEST_ERROR
 	}
 	return result
@@ -167,7 +176,8 @@ func (r RedisBase) LInsertBefore(key string, pivot, value interface{}) int64 {
 func (r RedisBase) LInsertAfter(key string, pivot, value interface{}) int64 {
 	result, err := r.pool.LInsertAfter(key, pivot, value).Result()
 	if err != nil {
-		log.Printf("LInsertAfter :%s pivot: %s value:%s 失败", key, pivot, value)
+		log.Printf("LInsertAfter :%s pivot: %s value:%s 失败\n", key, pivot, value)
+		log.Println(err)
 		return base.TEST_ERROR
 	}
 	return result

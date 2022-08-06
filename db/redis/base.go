@@ -18,12 +18,12 @@ type RedisBase struct {
 // init 初始化类,创建连接池
 //  @Description:
 //
-func NewRdisPool(host string, db int) RedisBase {
-	redisBase := RedisBase{Host: host, Db: db}
+func NewRdisPool(host, password string, db int) RedisBase {
+	redisBase := RedisBase{Host: host, Pwd: password, Db: db}
 	redisBase.pool = redis.NewClient(&redis.Options{
-		//Password: "",
+		Password:        password,
 		Addr:            host,
-		DB:              0,
+		DB:              db,
 		MaxRetries:      3,
 		MinRetryBackoff: 100 * time.Millisecond,
 		DialTimeout:     5 * time.Second,

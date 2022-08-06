@@ -3,6 +3,7 @@ package redis
 import (
 	"fmt"
 	"funtester/base"
+	"funtester/ftool"
 	"log"
 	"time"
 )
@@ -92,7 +93,7 @@ func (r RedisBase) SetNX(key string, value interface{}, second int64) bool {
 func (r RedisBase) MGet(keys ...string) []interface{} {
 	result, err := r.pool.MGet(keys...).Result()
 	if err != nil {
-		log.Printf("获取 keys : %s 失败 %s", fmt.Sprint(keys), err.Error())
+		log.Printf("获取 keys : %s 失败 %s", ftool.ToString(keys), err.Error())
 		return nil
 	}
 	return result
