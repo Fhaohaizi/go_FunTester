@@ -3,6 +3,7 @@ package redistest
 import (
 	"funtester/base"
 	"funtester/db/redis"
+	"funtester/execute"
 	"github.com/go-playground/assert/v2"
 	"log"
 	"strconv"
@@ -52,5 +53,14 @@ func TestLRange(t *testing.T) {
 	for _, s := range lRange {
 		log.Println(s)
 	}
+}
 
+func TestPushPopPerf(t *testing.T) {
+	var pool = redis.NewRdisPool("127.0.0.1:6379", base.Empty, 1)
+	var key = "fun"
+	var value = "FunTester"
+	execute.ExecuteRoutineTime(func() {
+		pool.LPush(key, value)
+		pool.RPop(key)
+	}, 20, 2)
 }
