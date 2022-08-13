@@ -4,22 +4,22 @@ import (
 	"funtester/ftool"
 	"log"
 	"sync"
-	"time"
+	t "time"
 )
 
 // ExecuteRoutineTimes
 // @Description: FunTester性能测试执行框架
 // @param fun 待执行方法
 // @param times 次数
-// @param thread 线程数
-func ExecuteRoutineTimes(fun func(), t, r int) {
+// @param routine 线程数
+func ExecuteRoutineTimes(fun func(), times, routine int) {
 	c := make(chan int) //确认所有线程都结束
 	key := false        //用于控制所有线程一起结束
 	start := ftool.Milli()
-	for i := 0; i < r; i++ {
+	for i := 0; i < routine; i++ {
 		go func() {
 			sum := 0
-			for i := 0; i < t; i++ {
+			for i := 0; i < times; i++ {
 				if key {
 					break
 				}
@@ -31,7 +31,7 @@ func ExecuteRoutineTimes(fun func(), t, r int) {
 		}()
 	}
 	total := 0
-	for i := 0; i < r; i++ {
+	for i := 0; i < routine; i++ {
 		num := <-c
 		total += num
 	}
@@ -44,15 +44,15 @@ func ExecuteRoutineTimes(fun func(), t, r int) {
 	log.Printf("QPS: %f", float64(total)/float64(diff)*1000.0)
 }
 
-func ExecuteRoutineTime(fun func(), t, r int) {
+func ExecuteRoutineTime(fun func(), time, routine int) {
 	c := make(chan int) //确认所有线程都结束
 	key := false        //用于控制所有线程一起结束
-	start := time.Now().UnixMilli()
+	start := t.Now().UnixMilli()
 	go func() {
-		ftool.Sleep(t * 1000)
+		ftool.Sleep(time * 1000)
 		key = true
 	}()
-	for i := 0; i < r; i++ {
+	for i := 0; i < routine; i++ {
 		go func() {
 			sum := 0
 			for {
@@ -66,11 +66,11 @@ func ExecuteRoutineTime(fun func(), t, r int) {
 		}()
 	}
 	total := 0
-	for i := 0; i < r; i++ {
+	for i := 0; i < routine; i++ {
 		num := <-c
 		total += num
 	}
-	end := time.Now().UnixMilli()
+	end := t.Now().UnixMilli()
 	diff := end - start
 	//total := thread * time
 	log.Printf("总耗时: %f", float64(diff)/1000)
@@ -82,7 +82,7 @@ func ExecuteRoutineTime(fun func(), t, r int) {
 func ExecuteTask(task Task) {
 	c := make(chan int) //确认所有线程都结束
 	key := false        //用于控制所有线程一起结束
-	start := time.Now().UnixMilli()
+	start := t.Now().UnixMilli()
 	for i := 0; i < task.Thread; i++ {
 		go func() {
 			sum := 0
@@ -102,7 +102,7 @@ func ExecuteTask(task Task) {
 		num := <-c
 		total += num
 	}
-	end := time.Now().UnixMilli()
+	end := t.Now().UnixMilli()
 	diff := end - start
 	//total := thread * times
 	log.Printf("总耗时: %f", float64(diff)/1000)
