@@ -14,7 +14,7 @@ import (
 //  @return int64
 //
 func (r RedisBase) LPush(key string, value interface{}) int64 {
-	result, err := r.pool.LPushX(key, value).Result()
+	result, err := r.pool.LPush(key, value).Result()
 	if err != nil {
 		log.Printf("LPush:%s value: %s 失败\n", key, value)
 		log.Println(err)
