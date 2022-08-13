@@ -1,4 +1,4 @@
-package test
+package redistest
 
 import (
 	"funtester/base"
