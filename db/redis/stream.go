@@ -67,7 +67,7 @@ func (r RedisBase) XRead(args *redis.XReadArgs) []redis.XStream {
 func (r RedisBase) XDel(stream string, ids ...string) int64 {
 	result, err := r.pool.XDel(stream, ids...).Result()
 	if err != nil {
-		log.Printf("XDel stream:%s args:%s fail\n", stream, ftool.ToString(args))
+		log.Printf("XDel stream:%s ids:%s fail\n", stream, ftool.ToString(ids))
 		log.Println(err)
 		return base.TestError
 	}

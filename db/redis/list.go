@@ -3,7 +3,6 @@ package redis
 import (
 	"funtester/base"
 	"log"
-	"time"
 )
 
 // LPush
@@ -47,7 +46,7 @@ func (r RedisBase) RPush(key string, value interface{}) int64 {
 //  @param second
 //  @return string
 //
-func (r RedisBase) LPop(key string, second time.Duration) string {
+func (r RedisBase) LPop(key string) string {
 	result, err := r.pool.LPop(key).Result()
 	if err != nil {
 		log.Printf("LPop:%s 失败\n", key)
@@ -64,7 +63,7 @@ func (r RedisBase) LPop(key string, second time.Duration) string {
 //  @param second
 //  @return string
 //
-func (r RedisBase) RPop(key string, second time.Duration) string {
+func (r RedisBase) RPop(key string) string {
 	result, err := r.pool.RPop(key).Result()
 	if err != nil {
 		log.Printf("RPop:%s 失败\n", key)
