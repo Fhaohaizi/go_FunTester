@@ -1,8 +1,10 @@
 package ftool
 
 import (
+	"bufio"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -42,4 +44,18 @@ func NumberFormat(str string) string {
 		arr[0] = arr[0][:length1-(i+1)*3] + "," + arr[0][length1-(i+1)*3:]
 	}
 	return strings.Join(arr, ".") //将一系列字符串连接为一个字符串，之间用sep来分隔。
+}
+
+// HandleInput
+//  @Description: 处理控制台输入内容
+//  @param handle
+//
+func HandleInput(handle func(input string)) {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Print("-> ")
+		text, _ := reader.ReadString('\n')
+		text = strings.Replace(text, "\n", "", -1)
+		handle(text)
+	}
 }

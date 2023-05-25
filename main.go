@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"funtester/fhttp"
+	"funtester/ftool"
 	"github.com/gorilla/websocket"
 	"io"
 	"log"
@@ -24,14 +24,12 @@ func init() {
 var done = make(chan struct{})
 
 func main() {
-	url := "http://localhost:12345/test/fun"
-	get := fhttp.Get(url, nil)
-	response := fhttp.Response(get)
-	log.Println(string(response))
-
-	fastGet := fhttp.FastGet(url, nil)
-	fastResponse, _ := fhttp.FastResponse(fastGet)
-	log.Printf(string(fastResponse))
+	ftool.HandleInput(func(input string) {
+		//log.Println(input)
+		if input == "a" {
+			log.Println(3333333)
+		}
+	})
 }
 
 func ManySocket() {
