@@ -154,3 +154,20 @@ func (pool *GorotinesPool) balance() {
 		}
 	}
 }
+
+func (pool *GorotinesPool) ExecuteQps(t func(), qps int) {
+	mutiple := qps / 10
+	remainder := qps % 10
+	for i := 0; i < 10; i++ {
+		pool.Execute(func() {
+			for i := 0; i < mutiple; i++ {
+				t()
+			}
+		})
+	}
+	pool.Execute(func() {
+		for i := 0; i < remainder; i++ {
+			t()
+		}
+	})
+}

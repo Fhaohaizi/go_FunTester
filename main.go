@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"funtester/execute"
 	"funtester/ftool"
 	"github.com/gorilla/websocket"
 	"io"
@@ -24,13 +25,23 @@ func init() {
 var done = make(chan struct{})
 
 func main() {
-	ftool.HandleInput(func(input string) bool {
-		//log.Println(input)
-		if input == "a" {
-			log.Println(3333333)
+	pool := execute.GetPool(1000, 2, 200, 1)
+	var qps int = 1
+	go ftool.HandleInput(func(input string) bool {
+		put, error := strconv.Atoi(input)
+		if error == nil {
+			log.Println(put)
+			qps = put
 		}
-		return len(input) == 0
+		return false
 	})
+	for {
+		pool.ExecuteQps(func() {
+			log.Println(111111111)
+		}, qps)
+		ftool.Sleep(1000)
+	}
+	pool.Wait()
 }
 
 func ManySocket() {
