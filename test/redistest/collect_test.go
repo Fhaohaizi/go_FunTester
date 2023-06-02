@@ -5,6 +5,8 @@ import (
 	"funtester/db/redis"
 	"funtester/execute"
 	"funtester/ftool"
+	r "github.com/go-redis/redis"
+	"github.com/vmihailenco/msgpack/v5"
 	"log"
 	"strings"
 	"testing"
@@ -72,4 +74,70 @@ func TestSetPer(t *testing.T) {
 		}
 
 	}, 20, 5)
+}
+
+type Funtester struct {
+	Name string
+	Age  int
+}
+
+//func (f Funtester) MarshalBinary() (data []byte, err error) {
+//	return f.Marshal(), nil
+//}
+
+func (f Funtester) Marshal() []byte {
+	marshal, err := msgpack.Marshal(f)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	return marshal
+}
+
+func (f *Funtester) UnMarshal(data []byte) {
+	msgpack.Unmarshal(data, f)
+}
+
+func (f *Funtester) UnMarshalStr(s string) {
+	msgpack.Unmarshal([]byte(s), f)
+}
+
+func TestSorted(t *testing.T) {
+	var pool = redis.NewRdisPool("127.0.0.1:6379", base.Empty, 2)
+	var key = "redis sorted"
+	ob := Funtester{
+		Name: "我是FunTester" + ftool.RandomStr(10),
+		Age:  ftool.RandomInt(100),
+	}
+	z := r.Z{
+		Score:  float64(ftool.RandomInt(100)),
+		Member: ob.Marshal(),
+	}
+	pool.ZAdd(key, z)
+	log.Printf("总数量:%d", pool.ZCard(key))
+	log.Printf("50 分以上总数量:%d", pool.ZCount(key, "50", "99"))
+	//pool.ZIncrBy(key, 1000, string(ob.Marshal()))
+	zRange := pool.ZRange(key, 0, 1)
+	for i := range zRange {
+		v := zRange[i]
+		s := &Funtester{}
+		s.UnMarshalStr(v)
+		log.Println(s.Age)
+	}
+	log.Println("------------")
+	scores := pool.ZRangeByScoreWithScores(key, r.ZRangeBy{
+		Min:    "2",    // 最小分数
+		Max:    "1000", // 最大分数
+		Offset: 0,      // 表示开始偏移量
+		Count:  2,      // 一次返回多少数据
+	})
+	for i, score := range scores {
+		log.Println(i)
+		log.Println(score.Score)
+		member := score.Member
+		var f Funtester
+		f.UnMarshalStr(ftool.ToString(member))
+		log.Println(f.Name)
+	}
+	pool.ZRemRangeByRank(key)
 }

@@ -50,12 +50,14 @@ func NumberFormat(str string) string {
 //  @Description: 处理控制台输入内容
 //  @param handle
 //
-func HandleInput(handle func(input string)) {
+func HandleInput(handle func(input string) bool) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print("-> ")
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\n", "", -1)
-		handle(text)
+		if handle(text) {
+			break
+		}
 	}
 }

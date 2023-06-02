@@ -24,11 +24,12 @@ func init() {
 var done = make(chan struct{})
 
 func main() {
-	ftool.HandleInput(func(input string) {
+	ftool.HandleInput(func(input string) bool {
 		//log.Println(input)
 		if input == "a" {
 			log.Println(3333333)
 		}
+		return len(input) == 0
 	})
 }
 
