@@ -66,6 +66,11 @@ func GetPool(max, min, maxWaitTask, timeout int) *GorotinesPool {
 //  @receiver pool
 //
 func (pool *GorotinesPool) worker() {
+	defer func() {
+		if p := recover(); p != nil {
+			log.Printf("execute task fail: %v", p)
+		}
+	}()
 Fun:
 	for t := range pool.tasks {
 		atomic.AddInt32(&pool.ExecuteTotal, 1)
