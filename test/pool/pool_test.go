@@ -25,6 +25,22 @@ func TestPool122(t *testing.T) {
 	pool.Wait()
 }
 
+func TestPool(t *testing.T) {
+	pool := execute.GetPool(1000, 1, 200, 1)
+	for i := 0; i < 3; i++ {
+		pool.Execute(func() {
+			log.Println(i)
+			ftool.Sleep(1000)
+		})
+	}
+	ftool.Sleep(3000)
+	pool.Wait()
+	log.Printf("T : %d", pool.ExecuteTotal)
+	log.Printf("R : %d", pool.ReceiveTotal)
+	log.Printf("max : %d", pool.Max)
+	log.Printf("min : %d", pool.Min)
+}
+
 var poolLock sync.Mutex
 
 func TestDa(t *testing.T) {
