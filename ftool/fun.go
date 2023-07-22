@@ -53,7 +53,6 @@ func NumberFormat(str string) string {
 func HandleInput(handle func(input string) bool) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Print("-> ")
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\n", "", -1)
 		if handle(text) {

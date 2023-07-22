@@ -16,6 +16,7 @@ type GorotinesPool struct {
 	active       int32
 	ReceiveTotal int32
 	ExecuteTotal int32
+	SingleTimes  int
 	addTimeout   time.Duration
 }
 
@@ -43,6 +44,7 @@ func GetPool(max, min, maxWaitTask, timeout int) *GorotinesPool {
 		active:       0,
 		ReceiveTotal: 0,
 		ExecuteTotal: 0,
+		SingleTimes:  10,
 		addTimeout:   time.Duration(timeout) * time.Second,
 	}
 	for i := 0; i < min; i++ {
@@ -160,10 +162,16 @@ func (pool *GorotinesPool) balance() {
 	}
 }
 
+// ExecuteQps
+//  @Description: 执行任务固定次数
+//  @receiver pool
+//  @param t
+//  @param qps
+//
 func (pool *GorotinesPool) ExecuteQps(t func(), qps int) {
-	mutiple := qps / 10
-	remainder := qps % 10
-	for i := 0; i < 10; i++ {
+	mutiple := qps / pool.SingleTimes
+	remainder := qps % pool.SingleTimes
+	for i := 0; i < pool.SingleTimes; i++ {
 		pool.Execute(func() {
 			for i := 0; i < mutiple; i++ {
 				t()
