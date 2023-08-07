@@ -30,14 +30,14 @@ func main() {
 	go ftool.HandleInput(func(input string) bool {
 		put, error := strconv.Atoi(input)
 		if error == nil {
-			log.Println(put)
+			log.Printf("input content: %d", put)
 			qps = put
 		}
 		return false
 	})
 	for {
 		pool.ExecuteQps(func() {
-			log.Println(111111111)
+			log.Println(ftool.Date())
 		}, qps)
 		ftool.Sleep(1000)
 	}
