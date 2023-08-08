@@ -11,13 +11,13 @@ import (
 type GorotinesPool struct {
 	Max          int
 	Min          int
-	tasks        chan func() taskType
+	tasks        chan func()
 	status       bool
-	active       int32
-	ReceiveTotal int32
+	Active       int32
 	ExecuteTotal int32
 	SingleTimes  int
 	addTimeout   time.Duration
+	MaxIdle      time.Duration
 }
 
 type taskType int
@@ -35,21 +35,20 @@ const (
 //  @param timeout 添加任务超时时间，单位s
 //  @return *GorotinesPool
 //
-func GetPool(max, min, maxWaitTask, timeout int) *GorotinesPool {
+func GetPool(max, min, maxWaitTask, timeout, maxIdle int) *GorotinesPool {
 	p := &GorotinesPool{
 		Max:          max,
 		Min:          min,
-		tasks:        make(chan func() taskType, maxWaitTask),
+		tasks:        make(chan func(), maxWaitTask),
 		status:       true,
-		active:       0,
-		ReceiveTotal: 0,
+		Active:       0,
 		ExecuteTotal: 0,
 		SingleTimes:  10,
 		addTimeout:   time.Duration(timeout) * time.Second,
+		MaxIdle:      time.Duration(maxIdle) * time.Second,
 	}
 	for i := 0; i < min; i++ {
-		atomic.AddInt32(&p.active, 1)
-		go p.worker()
+		p.AddWorker()
 	}
 	go func() {
 		for {
@@ -74,13 +73,14 @@ func (pool *GorotinesPool) worker() {
 		}
 	}()
 Fun:
-	for t := range pool.tasks {
-		atomic.AddInt32(&pool.ExecuteTotal, 1)
-		switch t() {
-		case normal:
-			atomic.AddInt32(&pool.active, -1)
-		case reduce:
-			if pool.active > int32(pool.Min) {
+	for {
+		select {
+		case t := <-pool.tasks:
+			atomic.AddInt32(&pool.ExecuteTotal, 1)
+			t()
+		case <-time.After(pool.MaxIdle):
+			if pool.Active > int32(pool.Min) {
+				atomic.AddInt32(&pool.Active, -1)
 				break Fun
 			}
 		}
@@ -96,11 +96,9 @@ Fun:
 func (pool *GorotinesPool) Execute(t func()) error {
 	if pool.status {
 		select {
-		case pool.tasks <- func() taskType {
+		case pool.tasks <- func() {
 			t()
-			return normal
 		}:
-			atomic.AddInt32(&pool.ReceiveTotal, 1)
 			return nil
 		case <-time.After(pool.addTimeout):
 			return errors.New("add tasks timeout")
@@ -118,13 +116,13 @@ func (pool *GorotinesPool) Wait() {
 	pool.status = false
 Fun:
 	for {
-		if len(pool.tasks) == 0 || pool.active == 0 {
+		if len(pool.tasks) == 0 || pool.Active == 0 {
 			break Fun
 		}
 		ftool.Sleep(1000)
 	}
 	defer close(pool.tasks)
-	log.Printf("recieve: %d,execute: %d", pool.ReceiveTotal, pool.ExecuteTotal)
+	log.Printf("execute: %d", pool.ExecuteTotal)
 }
 
 // AddWorker
@@ -132,19 +130,8 @@ Fun:
 //  @receiver pool
 //
 func (pool *GorotinesPool) AddWorker() {
-	atomic.AddInt32(&pool.active, 1)
+	atomic.AddInt32(&pool.Active, 1)
 	go pool.worker()
-}
-
-// ReduceWorker
-//  @Description: 减少worker,协程数减1
-//  @receiver pool
-//
-func (pool *GorotinesPool) ReduceWorker() {
-	atomic.AddInt32(&pool.active, -1)
-	pool.tasks <- func() taskType {
-		return reduce
-	}
 }
 
 // balance
@@ -153,11 +140,12 @@ func (pool *GorotinesPool) ReduceWorker() {
 //
 func (pool *GorotinesPool) balance() {
 	if pool.status {
-		if len(pool.tasks) > 0 && pool.active < int32(pool.Max) {
-			pool.AddWorker()
-		}
-		if len(pool.tasks) == 0 && pool.active > int32(pool.Min) {
-			pool.ReduceWorker()
+		if len(pool.tasks) > 0 && pool.Active < int32(pool.Max) {
+			for i := 0; i < len(pool.tasks); i++ {
+				if int(pool.Active) < pool.Max {
+					pool.AddWorker()
+				}
+			}
 		}
 	}
 }
@@ -171,15 +159,19 @@ func (pool *GorotinesPool) balance() {
 func (pool *GorotinesPool) ExecuteQps(t func(), qps int) {
 	mutiple := qps / pool.SingleTimes
 	remainder := qps % pool.SingleTimes
-	for i := 0; i < pool.SingleTimes; i++ {
+	for i := 0; i < mutiple; i++ {
 		pool.Execute(func() {
-			for i := 0; i < mutiple; i++ {
+			atomic.AddInt32(&pool.ExecuteTotal, -1)
+			for i := 0; i < pool.SingleTimes; i++ {
+				atomic.AddInt32(&pool.ExecuteTotal, 1)
 				t()
 			}
 		})
 	}
 	pool.Execute(func() {
+		atomic.AddInt32(&pool.ExecuteTotal, -1)
 		for i := 0; i < remainder; i++ {
+			atomic.AddInt32(&pool.ExecuteTotal, 1)
 			t()
 		}
 	})
