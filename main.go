@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"funtester/execute"
-	"funtester/ftool"
+	"funtester/fwebsocket"
 	"github.com/gorilla/websocket"
 	"io"
 	"log"
@@ -25,23 +24,47 @@ func init() {
 var done = make(chan struct{})
 
 func main() {
-	pool := execute.GetPool(1000, 2, 200, 1)
-	var qps int = 1
-	go ftool.HandleInput(func(input string) bool {
-		put, error := strconv.Atoi(input)
-		if error == nil {
-			log.Printf("input content: %d", put)
-			qps = put
-		}
-		return false
-	})
-	for {
-		pool.ExecuteQps(func() {
-			log.Println(ftool.Date())
-		}, qps)
-		ftool.Sleep(1000)
-	}
-	pool.Wait()
+	fwebsocket.CreateServer(12345, "/test")
+
+	//pool := execute.GetPool(1000, 2, 200, 1, 1)
+	//var qps int = 1
+	//go ftool.HandleInput(func(input string) bool {
+	//	put, error := strconv.Atoi(input)
+	//	if error == nil {
+	//		log.Printf("input content: %d", put)
+	//		qps = put
+	//	} else {
+	//		log.Printf("input not correct: %s", input)
+	//	}
+	//
+	//	return false
+	//})
+	////url := "http://localhost:12345"
+	//
+	//var count int32 = 0
+	//go func() {
+	//	for {
+	//		ftool.Sleep(3000)
+	//		i := pool.ExecuteTotal - count
+	//		count = pool.ExecuteTotal
+	//		log.Printf("QPS:%d , active: %d", i/3, pool.Active)
+	//	}
+	//}()
+	//
+	//for {
+	//	pool.ExecuteQps(func() {
+	//		//req := fasthttp.AcquireRequest()
+	//		//req.Header.SetMethod("GET")
+	//		//req.SetRequestURI(url)
+	//		//resp := fasthttp.AcquireResponse()
+	//		//fhttp.FastClient.Do(req, resp)
+	//		//defer fasthttp.ReleaseRequest(req)
+	//		//defer fasthttp.ReleaseResponse(resp)
+	//		ftool.Sleep(20)
+	//	}, qps)
+	//	ftool.Sleep(1000)
+	//}
+	//pool.Wait()
 }
 
 func ManySocket() {

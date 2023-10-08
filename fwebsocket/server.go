@@ -22,17 +22,20 @@ func CreateServer(port int, path string) {
 		HandshakeTimeout: 5 * time.Second,
 	}
 
-	http.HandleFunc("/"+path, func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		conn, _ := upgrader.Upgrade(w, r, nil)
+		conn.WriteMessage(websocket.TextMessage, []byte("msg"))
 
 		for {
 			msgType, msg, err := conn.ReadMessage()
 			if err != nil {
+				log.Println(err)
 				return
 			}
 			fmt.Printf("%s receive: %s\n", conn.RemoteAddr(), string(msg))
 
 			if err = conn.WriteMessage(msgType, msg); err != nil {
+				log.Println("ffahv")
 				return
 			}
 		}
