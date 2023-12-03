@@ -24,8 +24,7 @@ func init() {
 var done = make(chan struct{})
 
 func main() {
-	fwebsocket.CreateServer(12345, "/test")
-
+	fwebsocket.CreateServer(12345, "/websocket")
 	//pool := execute.GetPool(1000, 2, 200, 1, 1)
 	//var qps int = 1
 	//go ftool.HandleInput(func(input string) bool {

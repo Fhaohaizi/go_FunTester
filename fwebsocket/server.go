@@ -1,7 +1,9 @@
 package fwebsocket
 
 import (
+	"encoding/json"
 	"fmt"
+	"funtester/ftool"
 	"github.com/gorilla/websocket"
 	websocket2 "golang.org/x/net/websocket"
 	"log"
@@ -24,24 +26,45 @@ func CreateServer(port int, path string) {
 
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		conn, _ := upgrader.Upgrade(w, r, nil)
-		conn.WriteMessage(websocket.TextMessage, []byte("msg"))
-
+		//conn.WriteMessage(websocket.TextMessage, []byte("Hello, I am FunTester"))
 		for {
 			msgType, msg, err := conn.ReadMessage()
 			if err != nil {
 				log.Println(err)
 				return
 			}
-			fmt.Printf("%s receive: %s\n", conn.RemoteAddr(), string(msg))
-
-			if err = conn.WriteMessage(msgType, msg); err != nil {
-				log.Println("ffahv")
-				return
+			valid := json.Valid([]byte(msg))
+			if valid {
+				var goods Goods
+				json.Unmarshal([]byte(msg), &goods)
+				goods.Price = ftool.RandomInt(100)
+				goods.Size = ftool.RandomInt(1000)
+				goods.Timestamp = ftool.Milli()
+				returnMsg, err := json.Marshal(goods)
+				if err = conn.WriteMessage(msgType, returnMsg); err != nil {
+					log.Println("ffahv")
+					return
+				}
+			} else {
+				fmt.Printf("%s receive: %s\n", conn.RemoteAddr(), string(msg))
+				returnMsg := []byte(fmt.Sprintf("server received: %s", string(msg)))
+				if err = conn.WriteMessage(msgType, returnMsg); err != nil {
+					log.Println("ffahv")
+					return
+				}
 			}
 		}
 	})
 
 	http.ListenAndServe(":"+strconv.Itoa(port), nil)
+}
+
+type Goods struct {
+	Name      string
+	Price     int
+	Size      int
+	Index     int
+	Timestamp int64
 }
 
 func CreateServer2(port int, path string) {
