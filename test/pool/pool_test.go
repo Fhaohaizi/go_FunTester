@@ -9,7 +9,7 @@ import (
 )
 
 func TestPool122(t *testing.T) {
-	pool := execute.GetPool(1000, 2, 200, 1)
+	pool := execute.GetPool(1000, 2, 200, 3, 60)
 	var in string
 	go ftool.HandleInput(func(input string) bool {
 		for {
@@ -26,7 +26,7 @@ func TestPool122(t *testing.T) {
 }
 
 func TestPool(t *testing.T) {
-	pool := execute.GetPool(1000, 1, 200, 1)
+	pool := execute.GetPool(1000, 1, 200, 3, 60)
 	for i := 0; i < 3; i++ {
 		pool.Execute(func() {
 			log.Println(i)
@@ -36,7 +36,7 @@ func TestPool(t *testing.T) {
 	ftool.Sleep(3000)
 	pool.Wait()
 	log.Printf("T : %d", pool.ExecuteTotal)
-	log.Printf("R : %d", pool.ReceiveTotal)
+	log.Printf("R : %d", pool.ExecuteTotal)
 	log.Printf("max : %d", pool.Max)
 	log.Printf("min : %d", pool.Min)
 }

@@ -15,7 +15,6 @@ type GorotinesPool struct {
 	status       bool
 	Active       int32
 	ExecuteTotal int32
-	SingleTimes  int
 	addTimeout   time.Duration
 	MaxIdle      time.Duration
 }
@@ -43,7 +42,6 @@ func GetPool(max, min, maxWaitTask, timeout, maxIdle int) *GorotinesPool {
 		status:       true,
 		Active:       0,
 		ExecuteTotal: 0,
-		SingleTimes:  10,
 		addTimeout:   time.Duration(timeout) * time.Second,
 		MaxIdle:      time.Duration(maxIdle) * time.Second,
 	}
@@ -156,23 +154,11 @@ func (pool *GorotinesPool) balance() {
 //  @param t
 //  @param qps
 //
-func (pool *GorotinesPool) ExecuteQps(t func(), qps int) {
-	mutiple := qps / pool.SingleTimes
-	remainder := qps % pool.SingleTimes
-	for i := 0; i < mutiple; i++ {
+func (pool *GorotinesPool) ExecuteQps(t func(), times int) {
+	for i := 0; i < times; i++ {
+		atomic.AddInt32(&pool.ExecuteTotal, 1)
 		pool.Execute(func() {
-			atomic.AddInt32(&pool.ExecuteTotal, -1)
-			for i := 0; i < pool.SingleTimes; i++ {
-				atomic.AddInt32(&pool.ExecuteTotal, 1)
-				t()
-			}
+			t()
 		})
 	}
-	pool.Execute(func() {
-		atomic.AddInt32(&pool.ExecuteTotal, -1)
-		for i := 0; i < remainder; i++ {
-			atomic.AddInt32(&pool.ExecuteTotal, 1)
-			t()
-		}
-	})
 }
