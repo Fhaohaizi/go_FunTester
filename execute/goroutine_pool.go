@@ -150,9 +150,9 @@ func (pool *GorotinesPool) balance() {
 
 // ExecuteQps
 //  @Description: 执行任务固定次数
-//  @receiver pool
-//  @param t
-//  @param qps
+//  @receiver pool 线程池
+//  @param t 任务
+//  @param times 运行次数
 //
 func (pool *GorotinesPool) ExecuteQps(t func(), times int) {
 	for i := 0; i < times; i++ {
