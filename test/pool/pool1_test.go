@@ -1,8 +1,9 @@
 package pool
 
 import (
+	"funtester/ftool"
 	"log"
-	"reflect"
+	"sync"
 	"testing"
 )
 
@@ -19,6 +20,7 @@ type PooledObject struct {
 //	@Description: 创建对象
 //	@return *PooledObject
 func NewObject() *PooledObject {
+	log.Println("创建对象")
 	return &PooledObject{
 		Name:    "",
 		Age:     0,
@@ -35,10 +37,11 @@ func (m *PooledObject) Reset() {
 	m.Name = ""
 	m.Age = 0
 	m.Address = ""
+	log.Println("重置对象")
 }
 
 type ObjectPool struct {
-	objects chan *PooledObject
+	ObjPool sync.Pool
 	Name    string
 }
 
@@ -49,8 +52,8 @@ type ObjectPool struct {
 //	@return *ObjectPool 对象类型
 func NewPool(size int) *ObjectPool {
 	return &ObjectPool{
-		objects: make(chan *PooledObject, size),
 		Name:    "FunTester测试",
+		ObjPool: sync.Pool{New: func() interface{} { return NewObject() }},
 	}
 }
 
@@ -60,13 +63,7 @@ func NewPool(size int) *ObjectPool {
 //	@receiver p 对象池
 //	@return *PooledObject 对象
 func (p *ObjectPool) Get() *PooledObject {
-	select {
-	case obj := <-p.objects:
-		return obj
-	default:
-		log.Println("额外创建对象")
-		return NewObject()
-	}
+	return p.ObjPool.Get().(*PooledObject)
 }
 
 // Back
@@ -76,20 +73,18 @@ func (p *ObjectPool) Get() *PooledObject {
 //	@param obj 回收的对象
 func (p *ObjectPool) Back(obj *PooledObject) {
 	obj.Reset()
-	select {
-	case p.objects <- obj:
-	default:
-		log.Println("丢弃对象")
-	}
+	p.ObjPool.Put(obj)
 }
 
 func TestPool1(t *testing.T) {
 	pool := NewPool(1)
 	get := pool.Get()
-	object := pool.Get()
-	log.Printf("%T", get)
-	log.Println(reflect.TypeOf(get))
+	get.Name = "FunTester"
+	get.Age = 18
+	get.Address = "地球"
+	log.Printf("%T %s", get, ftool.ToString(get))
 	pool.Back(get)
-	pool.Back(object)
+	get2 := pool.Get()
+	log.Printf("%T %s", get, ftool.ToString(get2))
 
 }

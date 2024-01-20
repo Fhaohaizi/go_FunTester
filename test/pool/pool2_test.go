@@ -48,6 +48,7 @@ func (p *ObjectPool2) Back(obj *PooledObject) {
 	select {
 	case p.objects <- obj:
 	default:
+		obj = nil
 		log.Println("丢弃对象")
 	}
 }
