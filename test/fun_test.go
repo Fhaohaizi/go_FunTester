@@ -94,9 +94,9 @@ func TestOnce(t *testing.T) {
 }
 
 // TestOnceSimple once对象简单测试
-//  @Description:
-//  @param t
 //
+//	@Description:
+//	@param t
 func TestOnceSimple(t *testing.T) {
 	var once sync.Once
 	for i := 0; i < 10; i++ {
